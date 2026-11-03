@@ -6,3 +6,4 @@ data/
 results/
 checkpoints/
 *.pt
+.pytest_cache/
