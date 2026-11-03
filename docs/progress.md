@@ -35,6 +35,9 @@ Ağa blur ve contrast seviyesini kendisi seçtirsek, bebek gibi önce bulanık v
 - 2026-11-03: Colab MCP kuruldu (`googlecolab/colab-mcp`, local scope, `uvx`). Sadece session-proxy modu var: araç varsayılan tarayıcıda Colab sekmesi açar, sekme açık kalmalı, Google girişi kullanıcıda. Araçlar yeni oturumda görünür. Plan: önce kısa bütçeli pilot, sonra tam deneyler; checkpoint'ler Drive'a.
 
 - 2026-11-03: Colab Pro, 300 CU. Deney planı: `docs/plans/colab-deneyler.md` (F0–F8, tahmini ~225 CU). Varsayılanlar: 16 kol, Exp3.S+PG, 30/100 epoch, CIFAR-10-C. Shape bias ertelendi.
+- 2026-11-03: Kod repo'su: https://github.com/omarreis01/autofocus-curriculum (public, hoca da görür). Colab token'sız `git clone` ile çeker. Commit'ler kullanıcı adına, Claude satırı yok.
+- 2026-11-03: F0–F1 bitti (repo'da, 8 test geçiyor, GPU'da henüz koşmadı). Kurulum: `colab/README.md`. Colab MCP artık Chrome'da açılır (`~/.claude.json` içinde `BROWSER=open -a "Google Chrome" %s`); Chrome eklentisi GPU menüsünü sürer, Colab sekmesi Claude sekme grubunda olmalı. Drive izni kullanıcının tıklaması ister.
+- Sonraki iş: Colab'da A100 seç, Drive bağla, `python -m src.data`, smoke test, 1 epoch hız ölçümü, runtime'ı kapat (F4 başlangıcı).
 
 ## Sonraki adım
 - Kullanıcı makaleleri okuyup taslak notları düzeltir, arkadaşına gönderir.
