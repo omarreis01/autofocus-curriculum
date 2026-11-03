@@ -2,135 +2,174 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,600&display=swap">
 <style>
-/* Layout: one reading column; tables and heatmaps scroll inside their own boxes */
+/* Layout: one reading column; charts and tables scroll inside their own boxes */
 :root{
   --bg:#f6f7f9; --panel:#ffffff; --fg:#1b2230; --muted:#5d6879; --line:#dde2ea;
-  --accent:#2f5bd3; --good:#1f8a52; --bad:#c2412d; --warn:#a86b00;
+  --accent:#2f5bd3; --accent2:#c06a1b; --good:#1f8a52; --bad:#c2412d; --warn:#a86b00;
   --heat0:#eef1f6; --heat1:#2f5bd3;
   --display:"Fraunces",Georgia,serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#12161d; --panel:#1a2029; --fg:#e4e8ef; --muted:#97a2b3; --line:#2b3340;
-  --accent:#7d9cf5; --good:#5cc68f; --bad:#ef7a66; --warn:#e0a83b; --heat0:#1f2631; --heat1:#7d9cf5; color-scheme:dark}}
+  --accent:#7d9cf5; --accent2:#eba05a; --good:#5cc68f; --bad:#ef7a66; --warn:#e0a83b; --heat0:#1f2631; --heat1:#7d9cf5; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#12161d; --panel:#1a2029; --fg:#e4e8ef; --muted:#97a2b3; --line:#2b3340;
-  --accent:#7d9cf5; --good:#5cc68f; --bad:#ef7a66; --warn:#e0a83b; --heat0:#1f2631; --heat1:#7d9cf5; color-scheme:dark}
+  --accent:#7d9cf5; --accent2:#eba05a; --good:#5cc68f; --bad:#ef7a66; --warn:#e0a83b; --heat0:#1f2631; --heat1:#7d9cf5; color-scheme:dark}
 body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
-main{max-width:860px;margin:0 auto;display:grid;gap:28px}
-h1{font:600 2rem/1.15 var(--display);margin:0;text-wrap:balance}
-h2{font:600 1.2rem/1.3 var(--body);margin:0 0 10px;text-wrap:balance}
-p{margin:0 0 10px;max-width:65ch}
-.meta{color:var(--muted);font-size:.85rem;font-family:var(--mono)}
+main{max-width:880px;margin:0 auto;display:grid;gap:24px}
+h1{font:600 2rem/1.15 var(--display);margin:0 0 6px;text-wrap:balance}
+h2{font:600 1.15rem/1.3 var(--body);margin:0 0 10px;text-wrap:balance}
+p{margin:0 0 10px;max-width:68ch}
+.meta{color:var(--muted);font-size:.82rem;font-family:var(--mono)}
 section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px;min-width:0}
 .scroll{overflow-x:auto}
-table{border-collapse:collapse;font-variant-numeric:tabular-nums;width:100%;font-size:.9rem}
+table{border-collapse:collapse;font-variant-numeric:tabular-nums;width:100%;font-size:.88rem}
 th,td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
 th:first-child,td:first-child{text-align:left}
-th{font-weight:500;color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
-.up{color:var(--good);font-weight:600}
-.dn{color:var(--bad)}
+th{font-weight:500;color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
+.best{color:var(--good);font-weight:600}
 code,.mono{font-family:var(--mono);font-size:.85em}
 .pill{display:inline-block;font:500 .75rem var(--mono);padding:2px 8px;border-radius:99px;border:1px solid currentColor}
-.pill.good{color:var(--good)} .pill.bad{color:var(--bad)} .pill.warn{color:var(--warn)}
-.status{display:flex;flex-wrap:wrap;gap:8px}
-.heat{display:grid;gap:18px}
-.heat figure{margin:0}
-.heat figcaption{font-weight:500;margin-bottom:6px}
-.legend{color:var(--muted);font-size:.8rem;margin-top:4px}
-ol,ul{margin:0;padding-left:20px;display:grid;gap:6px}
-.opt{display:grid;gap:12px}
-.opt div{border-left:3px solid var(--line);padding-left:12px}
-.opt div.rec{border-left-color:var(--accent)}
+.pill.good{color:var(--good)} .pill.bad{color:var(--bad)} .pill.warn{color:var(--warn)} .pill.run{color:var(--accent)}
+.status{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+ul,ol{margin:0;padding-left:20px;display:grid;gap:7px}
+.since{border-left:3px solid var(--accent);background:transparent}
+.legend{display:flex;flex-wrap:wrap;gap:14px;color:var(--muted);font-size:.8rem;margin-top:6px}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.dec{display:grid;gap:10px}
+.dec div{border-left:3px solid var(--line);padding-left:12px}
 details summary{cursor:pointer;color:var(--muted)}
+figure{margin:0}
+figcaption{font-weight:500;margin-bottom:6px}
 </style>
 
 <main>
 <header>
-  <h1>Pilot run, seed 0, 30 epochs</h1>
-  <p class="meta">2026-11-03 · A100 · ResNet-18 / CIFAR-10 · commit a689f01 · results: Drive results/short/&lt;cond&gt;/0/</p>
+  <h1>Curriculum runs, short budget</h1>
+  <p class="meta">updated 2026-11-04 · A100 · ResNet-18 / CIFAR-10 · 7 conditions × 3 seeds × 30 epochs · commit 4c98857 · Drive results/short/</p>
   <div class="status">
-    <span class="pill good">7 / 7 runs finished</span>
-    <span class="pill bad">BatchNorm bug in eval</span>
-    <span class="pill warn">H1 not seen (1 seed)</span>
-    <span class="pill warn">decision needed before F5</span>
+    <span class="pill good">F5 done: 21 / 21 runs</span>
+    <span class="pill good">BN eval bug fixed</span>
+    <span class="pill bad">H1 rejected here: teacher goes hard-first</span>
+    <span class="pill run">F6 (100 epochs) running</span>
   </div>
 </header>
 
-<section>
-  <h2>Summary</h2>
+<section class="since">
+  <h2>Since last time</h2>
   <ul>
-    <li><b>BatchNorm mismatch.</b> Each batch uses one arm. In training, BN normalizes each batch with its own statistics. At test time, BN uses running averages that mix all arms. Clean accuracy falls to 13–60% for mixed conditions. After a BN recalibration on clean <i>training</i> images (100 batches, no test data), the numbers become normal.</li>
-    <li><b>The teacher does not choose blurry-first.</b> It starts near uniform and moves to the most degraded arm (σ=3, c=0.2). This is the opposite of H1. One seed only.</li>
-    <li><b>Robustness comes from exposure.</b> After recalibration, random, teacher and shuffled have similar CIFAR-10-C scores (~79–82%). Order adds no clear gain in this pilot. Sharp gets 69/73.</li>
+    <li>Eval now recalibrates BatchNorm on clean training images (option A). Seed 0 numbers re-made with it.</li>
+    <li>Seeds 1 and 2 finished. All three seeds agree; spread is ≤0.8 points.</li>
+    <li>F6 (full budget, 100 epochs) started on the A100 at 2026-11-04, ~2 h.</li>
   </ul>
 </section>
 
 <section>
-  <h2>Results: before and after BN recalibration</h2>
-  <p class="meta">Accuracy %. "Seen" = 5 blur types + contrast in CIFAR-10-C; "unseen" = the other 13. Mean over 5 severities.</p>
-  <div class="scroll"><table id="res"></table></div>
-</section>
-
-<section>
-  <h2>What the teacher chose</h2>
-  <p>Rows are the 16 arms, from sharp (top) to most degraded (bottom). Columns are epochs. Darker = more batches in that epoch (97 batches per epoch).</p>
-  <div class="heat" id="heat"></div>
-  <p class="legend">Arm label = blur σ (px) / contrast. Final policy: teacher_pg puts 0.35 on arm σ3/c0.2; teacher_spg puts 0.58 on it.</p>
-</section>
-
-<section>
-  <h2>Decision: how to fix the BatchNorm mismatch</h2>
-  <div class="opt">
-    <div class="rec"><b>A. Recalibrate BN on clean training images before every eval (recommended).</b> Same rule for all 7 conditions. Uses training data only. No retraining: the pilot numbers above already use it. Small change in <code>src/eval.py</code>. Undo: a flag.</div>
-    <div><b>B. Replace BN with GroupNorm.</b> Train and test behave the same. All runs must be retrained, and the sharp baseline changes. GroupNorm also cancels most of the contrast change per image.</div>
-    <div><b>C. Mix arms inside a batch.</b> The teacher picks a distribution, not one arm. Changes the method and the Graves reward.</div>
-  </div>
-  <p style="margin-top:12px">One more effect stays with A: during training, BN in train mode undoes most of a global contrast change. So the contrast axis is weaker than the blur axis. The teacher's choices along the diagonal are mostly driven by blur.</p>
-</section>
-
-<section>
-  <h2>Next step after the decision</h2>
+  <h2>Findings</h2>
   <ol>
-    <li>Add BN recalibration to <code>src/eval.py</code> (option A) and re-run the eval of the pilot.</li>
-    <li>F5: 7 conditions × 3 seeds × 30 epochs (~35 min on the A100).</li>
-    <li>Check if the "move to hard arms" pattern repeats over seeds.</li>
+    <li><b>The teacher does not start blurry.</b> In all 3 seeds, both teachers start near uniform and then move to the most degraded arm (σ 3 px, contrast 0.2). Near the end, when the learning rate goes to zero, the choice spreads out again. H1 (blurry-first) does not hold with this reward.</li>
+    <li><b>Random per batch is the best condition.</b> Highest CIFAR-10-C (81.4 seen, 82.2 unseen) at 89.4 clean. No ordered schedule beats it. This matches Jang &amp; Tong 2024 (mixed blur is a strong baseline).</li>
+    <li><b>Order adds little.</b> teacher_pg vs shuffled (same arms, random order): +0.6 clean, +0.4 seen, +0.3 unseen. Spread is 0.1–0.3, so the gain is small but present in all seeds.</li>
+    <li><b>Blur training gives noise robustness.</b> Mean over the 4 noise corruptions: sharp 55.5, random 76.4, teachers ~75. The gain is not only on "seen" corruptions.</li>
+    <li><b>Contrast training does not help contrast.</b> CIFAR-10-C contrast: sharp 73.8, random 69.3, teacher_pg 64.1. In training, BN uses batch statistics and undoes a global contrast change, so the network never really sees low contrast.</li>
   </ol>
+</section>
+
+<section>
+  <h2>Accuracy by condition</h2>
+  <p class="meta">Mean of 3 seeds; bar = min–max of seeds. Seen = 5 blur types + contrast; unseen = other 13 corruptions.</p>
+  <div class="scroll"><canvas id="dots"></canvas></div>
+  <div class="legend"><span><i class="sw" style="background:var(--fg)"></i>clean</span><span><i class="sw" style="background:var(--accent)"></i>C seen</span><span><i class="sw" style="background:var(--accent2)"></i>C unseen</span></div>
+  <details style="margin-top:12px"><summary>Table</summary><div class="scroll" style="margin-top:8px"><table id="tbl"></table></div></details>
+</section>
+
+<section>
+  <h2>What the teacher chose over training</h2>
+  <p>Share of batches on the most degraded arm (σ 3, c 0.2) per epoch. Uniform would be 0.06. One line per seed.</p>
+  <div class="scroll"><canvas id="worst"></canvas></div>
+  <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>teacher_pg</span><span><i class="sw" style="background:var(--accent2)"></i>teacher_spg</span></div>
+  <details style="margin-top:12px"><summary>Full arm heatmaps, seed 0</summary><div id="heat" style="display:grid;gap:16px;margin-top:10px"></div></details>
+</section>
+
+<section>
+  <h2>Decisions made without you</h2>
+  <div class="dec">
+    <div><b>BN recalibration before every eval.</b> 100 batches of clean training images, same for all conditions. Undo: <code>python -m src.eval --no-recal</code>.</div>
+    <div><b>F6 in two waves.</b> 12 runs use 29 of 40 GB, so seeds 0+1 run first, then seed 2. Undo: none needed.</div>
+    <div><b>Kept PG and SPG as specified.</b> No change to the reward yet, although it prefers hard arms (see below).</div>
+  </div>
+</section>
+
+<section>
+  <h2>Open questions for after F6</h2>
+  <ul>
+    <li><b>Is "hard-first" a property of the PG reward?</b> Loss drops more on high-loss batches, so raw PG favors the hardest arm. A relative signal (PG ÷ loss before) would test this. Cost: one more teacher condition × 3 seeds.</li>
+    <li><b>Make contrast real.</b> Options: apply contrast per image inside mixed batches, or normalize with fixed statistics. Without this, the contrast axis is mostly noise for the teacher.</li>
+    <li><b>Shape bias</b> is still deferred.</li>
+  </ul>
 </section>
 
 <details>
   <summary>How the numbers were made</summary>
-  <p class="mono" style="margin-top:8px">recal: reset running stats, momentum=None, model.train(), 100 × 512 clean augmented train images, no_grad. Then src.eval.evaluate (10k clean + 19×5×10k CIFAR-10-C). Notebook cell output; saved to Drive results/short/pilot_bn_recal.json.</p>
+  <p class="mono" style="margin-top:8px">train: colab/run_budget.sh short 0..2 · eval: src.eval with BN recal (reset stats, momentum=None, train mode, 100×512 clean augmented train images) on 10k clean + 19×5×10k CIFAR-10-C · aggregate: src/collect.py → Drive results/short_summary.json</p>
 </details>
 </main>
 
 <script>
-const BN={"sharp":{"before":[0.9301,0.69357,0.73098],"after":[0.9296,0.69468,0.73313]},"staircase":{"before":[0.9045,0.7516,0.78598],"after":[0.9042,0.75176,0.78653]},"random":{"before":[0.6044,0.68539,0.51772],"after":[0.8912,0.8111,0.82055]},"shuffled":{"before":[0.2298,0.26801,0.20043],"after":[0.8379,0.79487,0.78279]},"teacher_pg":{"before":[0.2004,0.23318,0.18441],"after":[0.844,0.79902,0.7861]},"teacher_spg":{"before":[0.1603,0.17208,0.14178],"after":[0.8716,0.80798,0.80493]},"reverse":{"before":[0.132,0.13731,0.12252],"after":[0.8419,0.78172,0.7227]}};
-const H={
-teacher_pg:[[7,6,4,5,3,5,9,2,7,5,8,7,5,5,7,12],[9,3,4,8,4,4,9,3,4,8,3,7,3,10,7,11],[3,8,5,5,0,4,5,6,8,4,5,7,5,15,8,9],[5,6,4,13,0,2,4,12,1,4,11,3,10,11,8,3],[1,5,2,15,0,4,1,8,1,3,11,6,13,17,6,4],[3,1,1,11,0,2,6,10,0,2,10,9,15,15,8,4],[4,2,3,8,1,2,3,6,2,2,4,7,16,26,9,2],[1,1,0,2,0,2,3,5,3,2,2,6,18,19,24,9],[5,2,0,3,0,1,0,3,0,0,2,3,21,21,21,15],[1,1,2,1,0,3,1,0,1,2,0,3,6,23,34,19],[0,2,1,2,1,2,3,1,2,1,2,2,4,20,30,24],[2,1,1,1,2,0,0,3,1,1,2,2,8,10,23,40],[1,1,1,3,1,2,1,1,1,0,0,0,6,8,25,46],[3,1,1,2,2,1,1,0,2,3,1,0,4,5,14,57],[1,1,1,0,1,3,2,0,1,0,1,0,3,4,5,74],[1,1,1,1,0,2,1,1,1,2,1,2,1,1,7,74],[1,1,1,1,1,0,0,1,0,0,2,3,1,4,2,79],[1,1,1,1,2,0,0,2,1,1,1,0,1,1,4,80],[2,2,3,1,1,2,3,2,2,1,2,1,1,1,0,73],[0,0,1,2,1,2,0,0,2,2,1,1,1,1,4,79],[1,1,0,2,2,1,2,4,1,3,0,2,1,3,2,72],[2,2,2,0,2,0,4,1,1,0,1,2,5,0,3,72],[0,2,2,3,1,3,0,0,2,1,1,1,5,1,0,75],[3,2,3,0,0,1,0,2,0,3,3,1,3,3,2,71],[3,3,1,3,2,5,4,0,2,0,1,2,2,2,4,63],[4,4,2,2,3,3,0,3,3,2,6,2,2,1,3,57],[6,2,1,2,3,1,2,3,3,1,10,1,1,6,8,47],[2,4,0,1,3,7,4,9,3,4,7,1,0,8,1,43],[5,2,3,0,1,2,6,4,3,5,7,5,2,2,3,47],[4,0,1,5,1,4,4,5,2,2,9,5,1,4,2,48]],
+const R={sharp:{clean:[.9296,.9332,.9318],seen:[.69468,.701,.69253],unseen:[.73313,.7342,.73087]},
+staircase:{clean:[.9042,.9072,.909],seen:[.75176,.76689,.75395],unseen:[.78653,.78707,.78662]},
+reverse:{clean:[.8419,.8454,.8449],seen:[.78172,.78241,.779],unseen:[.7227,.70424,.71186]},
+random:{clean:[.8912,.8967,.8953],seen:[.8111,.81807,.81293],unseen:[.82055,.82241,.82276]},
+shuffled:{clean:[.8379,.8434,.845],seen:[.79487,.79678,.79946],unseen:[.78279,.78595,.78551]},
+teacher_pg:{clean:[.844,.851,.8479],seen:[.79902,.80279,.80191],unseen:[.7861,.78968,.78716]},
+teacher_spg:{clean:[.8716,.8695,.8682],seen:[.80798,.81051,.8126],unseen:[.80493,.80194,.8031]}};
+const W={teacher_pg:[[.12,.11,.09,.03,.04,.04,.02,.09,.15,.2,.25,.41,.47,.59,.76,.76,.81,.82,.75,.81,.74,.74,.77,.73,.65,.59,.48,.44,.48,.49],[.06,.07,0,.02,.02,.01,.05,.05,.12,.22,.26,.38,.59,.53,.65,.76,.78,.81,.75,.81,.74,.65,.67,.71,.63,.6,.58,.57,.51,.46],[.04,.09,.05,.01,.03,0,.04,.09,.14,.25,.37,.55,.59,.7,.77,.75,.82,.79,.81,.74,.81,.79,.6,.7,.66,.59,.47,.54,.48,.33]],
+teacher_spg:[[.08,.06,.06,.02,.01,.04,.02,.07,.06,.08,.1,.19,.26,.23,.52,.47,.48,.56,.51,.56,.63,.66,.75,.72,.69,.7,.7,.61,.62,.71],[.06,.08,.05,.05,.06,.04,.07,.06,.04,.11,.14,.14,.23,.15,.18,.28,.41,.4,.53,.63,.61,.56,.62,.68,.65,.66,.67,.67,.61,.6],[.04,.05,.03,.02,.04,.03,.04,.09,.1,.16,.16,.27,.27,.42,.46,.4,.51,.55,.58,.58,.69,.6,.54,.63,.64,.66,.61,.66,.65,.57]]};
+const H={teacher_pg:[[7,6,4,5,3,5,9,2,7,5,8,7,5,5,7,12],[9,3,4,8,4,4,9,3,4,8,3,7,3,10,7,11],[3,8,5,5,0,4,5,6,8,4,5,7,5,15,8,9],[5,6,4,13,0,2,4,12,1,4,11,3,10,11,8,3],[1,5,2,15,0,4,1,8,1,3,11,6,13,17,6,4],[3,1,1,11,0,2,6,10,0,2,10,9,15,15,8,4],[4,2,3,8,1,2,3,6,2,2,4,7,16,26,9,2],[1,1,0,2,0,2,3,5,3,2,2,6,18,19,24,9],[5,2,0,3,0,1,0,3,0,0,2,3,21,21,21,15],[1,1,2,1,0,3,1,0,1,2,0,3,6,23,34,19],[0,2,1,2,1,2,3,1,2,1,2,2,4,20,30,24],[2,1,1,1,2,0,0,3,1,1,2,2,8,10,23,40],[1,1,1,3,1,2,1,1,1,0,0,0,6,8,25,46],[3,1,1,2,2,1,1,0,2,3,1,0,4,5,14,57],[1,1,1,0,1,3,2,0,1,0,1,0,3,4,5,74],[1,1,1,1,0,2,1,1,1,2,1,2,1,1,7,74],[1,1,1,1,1,0,0,1,0,0,2,3,1,4,2,79],[1,1,1,1,2,0,0,2,1,1,1,0,1,1,4,80],[2,2,3,1,1,2,3,2,2,1,2,1,1,1,0,73],[0,0,1,2,1,2,0,0,2,2,1,1,1,1,4,79],[1,1,0,2,2,1,2,4,1,3,0,2,1,3,2,72],[2,2,2,0,2,0,4,1,1,0,1,2,5,0,3,72],[0,2,2,3,1,3,0,0,2,1,1,1,5,1,0,75],[3,2,3,0,0,1,0,2,0,3,3,1,3,3,2,71],[3,3,1,3,2,5,4,0,2,0,1,2,2,2,4,63],[4,4,2,2,3,3,0,3,3,2,6,2,2,1,3,57],[6,2,1,2,3,1,2,3,3,1,10,1,1,6,8,47],[2,4,0,1,3,7,4,9,3,4,7,1,0,8,1,43],[5,2,3,0,1,2,6,4,3,5,7,5,2,2,3,47],[4,0,1,5,1,4,4,5,2,2,9,5,1,4,2,48]],
 teacher_spg:[[8,6,3,5,4,6,4,6,8,4,9,6,5,7,8,8],[8,3,4,5,7,3,8,4,9,6,4,5,4,11,10,6],[3,9,7,2,0,6,8,5,6,8,4,6,14,8,5,6],[5,6,10,7,2,4,12,5,3,12,2,9,5,8,5,2],[2,5,6,12,5,3,6,6,8,6,8,8,11,4,6,1],[3,2,7,13,7,4,8,8,8,7,6,3,7,7,3,4],[6,5,6,8,8,3,7,9,6,2,4,9,10,8,4,2],[2,0,2,10,7,2,5,5,6,3,4,6,10,23,5,7],[7,1,5,6,5,3,3,5,5,4,5,6,12,14,10,6],[2,3,5,6,1,0,5,4,4,3,3,10,19,14,10,8],[3,5,9,4,2,6,4,5,4,2,2,8,15,6,12,10],[4,3,4,7,5,1,2,3,2,4,2,10,11,9,12,18],[2,5,3,2,3,2,2,3,3,3,4,11,10,11,8,25],[4,4,3,4,4,2,3,2,3,4,2,2,15,11,12,22],[2,4,2,2,2,2,2,2,1,1,2,2,12,5,6,50],[2,2,3,2,5,0,2,1,4,3,2,1,16,4,4,46],[1,4,0,0,1,3,3,3,2,1,2,3,14,2,11,47],[2,1,2,1,2,1,1,1,1,1,2,3,12,8,5,54],[3,4,1,4,4,0,3,2,1,1,1,3,10,3,8,49],[0,1,2,3,0,1,2,2,2,1,1,6,11,7,4,54],[2,0,1,4,1,3,1,3,4,0,2,5,3,2,5,61],[1,2,3,0,2,1,2,2,0,2,2,5,7,1,3,64],[0,2,1,5,0,0,2,1,2,1,0,1,7,0,2,73],[3,1,1,2,1,0,0,0,2,2,0,3,8,2,2,70],[2,1,1,0,3,5,0,1,1,6,2,1,1,3,3,67],[2,2,2,2,1,4,0,1,3,1,1,1,6,2,1,68],[3,3,1,0,2,4,1,1,0,2,0,3,5,1,3,68],[1,1,0,3,1,1,1,5,4,3,1,0,14,1,2,59],[1,3,2,2,2,0,0,1,2,1,5,0,11,3,4,60],[2,1,1,0,2,0,3,2,0,3,1,1,4,5,3,69]]};
-const S=[0,0.75,1.5,3], Cc=[1,0.6,0.35,0.2];
+const css=getComputedStyle(document.documentElement), tok=n=>css.getPropertyValue(n).trim();
+const mean=a=>a.reduce((s,x)=>s+x,0)/a.length, sd=a=>{const m=mean(a);return Math.sqrt(mean(a.map(x=>(x-m)**2)))};
 const pct=v=>(v*100).toFixed(1);
-const t=document.getElementById("res");
-t.innerHTML="<tr><th>Condition</th><th>Clean</th><th>Seen</th><th>Unseen</th><th>Clean (recal)</th><th>Seen (recal)</th><th>Unseen (recal)</th></tr>"+
- Object.entries(BN).map(([k,v])=>{const d=i=>v.after[i]-v.before[i]>0.02?"up":"";
-  return `<tr><td class="mono">${k}</td>${v.before.map(x=>`<td class="${x<0.7?"dn":""}">${pct(x)}</td>`).join("")}${v.after.map((x,i)=>`<td class="${d(i)}">${pct(x)}</td>`).join("")}</tr>`}).join("");
-const css=getComputedStyle(document.documentElement);
-function draw(name){
-  const fig=document.createElement("figure"), cap=document.createElement("figcaption");
-  cap.textContent=name; fig.append(cap);
-  const box=document.createElement("div"); box.className="scroll";
-  const c=document.createElement("canvas"); const cw=20,ch=14,lx=78,ty=4,by=22;
-  c.width=(lx+30*cw)*2; c.height=(ty+16*ch+by)*2; c.style.width=(lx+30*cw)+"px"; c.style.maxWidth="none";
-  const g=c.getContext("2d"); g.scale(2,2);
-  const h0=css.getPropertyValue("--heat0").trim(), h1=css.getPropertyValue("--heat1").trim(), mu=css.getPropertyValue("--muted").trim();
-  g.font="11px 'IBM Plex Mono',monospace"; g.fillStyle=mu; g.textBaseline="middle";
-  for(let a=0;a<16;a++){g.fillText(`σ${S[a>>2]}/c${Cc[a&3]}`,0,ty+a*ch+ch/2);}
-  H[name].forEach((row,e)=>row.forEach((n,a)=>{
-    g.fillStyle=h0; g.fillRect(lx+e*cw,ty+a*ch,cw-1,ch-1);
-    g.globalAlpha=Math.min(1,n/80); g.fillStyle=h1; g.fillRect(lx+e*cw,ty+a*ch,cw-1,ch-1); g.globalAlpha=1;}));
-  g.fillStyle=mu; g.textBaseline="top";
-  [1,10,20,30].forEach(e=>g.fillText(e,lx+(e-1)*cw+4,ty+16*ch+6));
-  box.append(c); fig.append(box); document.getElementById("heat").append(fig);
+function canvas(el,w,h){const c=document.getElementById(el);c.width=w*2;c.height=h*2;c.style.width=w+"px";c.style.maxWidth="none";const g=c.getContext("2d");g.scale(2,2);return g}
+
+// table
+const keys=["clean","seen","unseen"], names=Object.keys(R);
+const best=Object.fromEntries(keys.map(k=>[k,Math.max(...names.map(n=>mean(R[n][k])))]));
+document.getElementById("tbl").innerHTML="<tr><th>Condition</th><th>Clean</th><th>C seen</th><th>C unseen</th></tr>"+
+ names.map(n=>`<tr><td class="mono">${n}</td>${keys.map(k=>`<td class="${mean(R[n][k])===best[k]?"best":""}">${pct(mean(R[n][k]))} ± ${pct(sd(R[n][k]))}</td>`).join("")}</tr>`).join("");
+
+// dot chart: rows = conditions, x = accuracy 60..95
+(function(){
+  const lx=110,w=560,rh=30,top=10,bot=26,H0=top+names.length*rh+bot,x0=60,x1=95,X=v=>lx+(v*100-x0)/(x1-x0)*(w-lx-10);
+  const g=canvas("dots",w,H0); const mu=tok("--muted"), ln=tok("--line");
+  g.font="11px 'IBM Plex Mono',monospace";
+  for(let t=60;t<=95;t+=5){g.strokeStyle=ln;g.beginPath();g.moveTo(X(t/100),top);g.lineTo(X(t/100),top+names.length*rh);g.stroke();g.fillStyle=mu;g.textAlign="center";g.fillText(t+"%",X(t/100),H0-8)}
+  const col={clean:tok("--fg"),seen:tok("--accent"),unseen:tok("--accent2")};
+  names.forEach((n,i)=>{const y=top+i*rh+rh/2;g.fillStyle=mu;g.textAlign="left";g.textBaseline="middle";g.fillText(n,0,y);
+    keys.forEach(k=>{const a=R[n][k];g.strokeStyle=col[k];g.lineWidth=2;g.beginPath();g.moveTo(X(Math.min(...a)),y);g.lineTo(X(Math.max(...a)),y);g.stroke();
+      g.fillStyle=col[k];g.beginPath();g.arc(X(mean(a)),y,4.5,0,7);g.fill()})});
+})();
+
+// worst-arm share line chart
+(function(){
+  const lx=34,w=600,h=220,top=8,bot=24,X=e=>lx+e/29*(w-lx-8),Y=v=>top+(1-v)*(h-top-bot);
+  const g=canvas("worst",w,h); const mu=tok("--muted"), ln=tok("--line");
+  g.font="11px 'IBM Plex Mono',monospace";g.textBaseline="middle";
+  [0,.25,.5,.75,1].forEach(v=>{g.strokeStyle=ln;g.beginPath();g.moveTo(lx,Y(v));g.lineTo(w-8,Y(v));g.stroke();g.fillStyle=mu;g.textAlign="right";g.fillText(v,lx-6,Y(v))});
+  g.setLineDash([3,3]);g.strokeStyle=mu;g.beginPath();g.moveTo(lx,Y(1/16));g.lineTo(w-8,Y(1/16));g.stroke();g.setLineDash([]);
+  g.textAlign="center";[1,10,20,30].forEach(e=>{g.fillStyle=mu;g.fillText("ep "+e,X(e-1),h-8)});
+  [["teacher_pg","--accent"],["teacher_spg","--accent2"]].forEach(([n,c])=>W[n].forEach(s=>{g.strokeStyle=tok(c);g.lineWidth=1.6;g.beginPath();s.forEach((v,e)=>e?g.lineTo(X(e),Y(v)):g.moveTo(X(e),Y(v)));g.stroke()}));
+})();
+
+// seed-0 heatmaps
+const S=[0,0.75,1.5,3], Cc=[1,0.6,0.35,0.2];
+for(const name of ["teacher_pg","teacher_spg"]){
+  const fig=document.createElement("figure"), cap=document.createElement("figcaption"); cap.textContent=name+" (rows: arms sharp → most degraded; columns: epochs)"; fig.append(cap);
+  const box=document.createElement("div"); box.className="scroll"; const c=document.createElement("canvas"); c.id="h_"+name; box.append(c); fig.append(box); document.getElementById("heat").append(fig);
+  const cw=19,ch=13,lx=78,ty=2,by=20, g=canvas(c.id,lx+30*cw,ty+16*ch+by);
+  g.font="11px 'IBM Plex Mono',monospace"; g.fillStyle=tok("--muted"); g.textBaseline="middle";
+  for(let a=0;a<16;a++) g.fillText(`σ${S[a>>2]}/c${Cc[a&3]}`,0,ty+a*ch+ch/2);
+  H[name].forEach((row,e)=>row.forEach((n,a)=>{g.fillStyle=tok("--heat0");g.fillRect(lx+e*cw,ty+a*ch,cw-1,ch-1);g.globalAlpha=Math.min(1,n/80);g.fillStyle=tok("--heat1");g.fillRect(lx+e*cw,ty+a*ch,cw-1,ch-1);g.globalAlpha=1}));
+  g.fillStyle=tok("--muted"); g.textBaseline="top"; [1,10,20,30].forEach(e=>g.fillText(e,lx+(e-1)*cw+3,ty+16*ch+5));
 }
-draw("teacher_pg"); draw("teacher_spg");
 </script>
