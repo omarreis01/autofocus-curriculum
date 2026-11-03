@@ -65,6 +65,8 @@ Kaynak: `docs/project_proposal.pdf`, `docs/okuma/okuma_notlari_curriculum.md`.
 - Kol seçim ısı haritası (zaman × kol), sıra korelasyonu, koşullar arası robustness, seed dağılımıyla.
 
 ## Bütçe tahmini
+**Ölçüm (2026-11-03, A100):** 2.0 s/epoch, 30 epoch koşu ~80 s, 100 epoch ~3.5 dk, eval 15 s. F5 (21 kısa koşu) ~35 dk, F6 (21 tam koşu) ~80 dk; PG ek forward'u ile ~1.3×. Aşağıdaki tablo eski tahmindir, gerçek ihtiyaç çok daha düşük.
+
 Tahmin, ölçüm değil. F4'te gerçek sayılarla güncellenecek.
 Varsayım: A100 ~12 CU/saat, ResNet-18 GPU-veri ile ~6 s/epoch, bandit koşularında PG için ek forward (~1.3×).
 

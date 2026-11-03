@@ -37,7 +37,10 @@ Ağa blur ve contrast seviyesini kendisi seçtirsek, bebek gibi önce bulanık v
 - 2026-11-03: Colab Pro, 300 CU. Deney planı: `docs/plans/colab-deneyler.md` (F0–F8, tahmini ~225 CU). Varsayılanlar: 16 kol, Exp3.S+PG, 30/100 epoch, CIFAR-10-C. Shape bias ertelendi.
 - 2026-11-03: Kod repo'su: https://github.com/omarreis01/autofocus-curriculum (public, hoca da görür). Colab token'sız `git clone` ile çeker. Commit'ler kullanıcı adına, Claude satırı yok.
 - 2026-11-03: F0–F1 bitti (repo'da, 8 test geçiyor, GPU'da henüz koşmadı). Kurulum: `colab/README.md`. Colab MCP artık Chrome'da açılır (`~/.claude.json` içinde `BROWSER=open -a "Google Chrome" %s`); Chrome eklentisi GPU menüsünü sürer, Colab sekmesi Claude sekme grubunda olmalı. Drive izni kullanıcının tıklaması ister.
-- Sonraki iş: Colab'da A100 seç, Drive bağla, `python -m src.data`, smoke test, 1 epoch hız ölçümü, runtime'ı kapat (F4 başlangıcı).
+- 2026-11-03: İlk GPU koşusu (A100). Veri HF mirror'dan iner (CIFAR-10: `liangnanying/cifar-10-python`, md5 kontrollü; CIFAR-10-C: `robro/cifar10-c-parquet`, etiket sırası CIFAR-10 test ile birebir doğrulandı). Toplam ~1.5 dk; Zenodo/Toronto çok yavaştı.
+- Ölçüm: 2.0 s/epoch (eager), `--compile` 1.7 s ama 30 s derleme → kullanılmıyor. Tam CIFAR-10-C eval 15 s. Sharp 30 epoch: clean %93.2, seen %70.5, unseen %73.7 → F1 kabul geçti. Sonuç Drive `results/sharp/0/`.
+- Colab kontrolü: Colab MCP hücre ekler/çalıştırır ama durduramaz/restart edemez. Bunlar için Colab sekmesi bu session'ın Chrome tab grubunda olmalı (her yeni session yeni grup açar).
+- Sonraki iş: F2 teacher (Exp3.S + PG/SPG) ve F3 kontrol koşulları. Bütçe artık sorun değil; darboğaz zaman.
 
 ## Sonraki adım
 - Kullanıcı makaleleri okuyup taslak notları düzeltir, arkadaşına gönderir.

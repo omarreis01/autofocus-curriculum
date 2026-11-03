@@ -2,3 +2,5 @@
 # Local CPU: uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 numpy
 pytest
+datasets
+huggingface_hub

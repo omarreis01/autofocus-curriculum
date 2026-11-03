@@ -1,13 +1,10 @@
 import argparse
 import shutil
-import tarfile
-import urllib.request
 from pathlib import Path
 
 import numpy as np
 import torch
 
-CIFAR10C_URL = "https://zenodo.org/records/2535967/files/CIFAR-10-C.tar?download=1"
 CORRUPTIONS = [
     "gaussian_noise", "shot_noise", "impulse_noise", "speckle_noise",
     "defocus_blur", "glass_blur", "motion_blur", "zoom_blur", "gaussian_blur",
@@ -21,29 +18,62 @@ STD = (0.2470, 0.2435, 0.2616)
 
 
 def download_cifar10(data_dir):
+    import os
+
+    os.environ["HF_XET_HIGH_PERFORMANCE"] = "1"
+    from huggingface_hub import hf_hub_download
     from torchvision.datasets import CIFAR10
 
-    for train in (True, False):
+    # exact original tar; torchvision md5-checks it before extracting
+    hf_hub_download("liangnanying/cifar-10-python", "cifar-10-python.tar.gz", repo_type="dataset", local_dir=data_dir)
+    for train in (False, True):
         CIFAR10(data_dir, train=train, download=True)
 
 
+def _decode_png(b):
+    import io
+
+    from PIL import Image
+
+    return np.asarray(Image.open(io.BytesIO(b)).convert("RGB"))
+
+
 def download_cifar10c(data_dir):
+    import os
+    from multiprocessing import Pool
+
     data_dir = Path(data_dir)
     out = data_dir / "CIFAR-10-C"
     if (out / "labels.npy").exists() and all((out / f"{c}.npy").exists() for c in CORRUPTIONS):
         print(f"CIFAR-10-C present in {out}")
         return
-    data_dir.mkdir(parents=True, exist_ok=True)
-    tar = data_dir / "CIFAR-10-C.tar"
-    if not tar.exists():
-        part = tar.with_suffix(".tar.part")
-        print(f"downloading CIFAR-10-C (~2.9 GB) to {tar}")
-        with urllib.request.urlopen(CIFAR10C_URL) as r, open(part, "wb") as f:
-            shutil.copyfileobj(r, f, length=1 << 22)
-        part.rename(tar)
-    with tarfile.open(tar) as t:
-        t.extractall(data_dir, filter="data")
-    tar.unlink()
+    os.environ["HF_XET_HIGH_PERFORMANCE"] = "1"
+    from datasets import Image, load_from_disk
+    from huggingface_hub import snapshot_download
+    from torchvision.datasets import CIFAR10
+
+    ref = np.array(CIFAR10(data_dir, train=False, download=True).targets)
+    out.mkdir(parents=True, exist_ok=True)
+    tmp = data_dir / "_cifar10c_hf"
+    # unofficial arrow mirror: PNG images + corruption_name, corruption_level (1-5), label
+    p = snapshot_download("robro/cifar10-c-parquet", repo_type="dataset", local_dir=tmp)
+    ds = load_from_disk(p).cast_column("image", Image(decode=False))
+    names = np.array(ds["corruption_name"])
+    lv = np.array(ds["corruption_level"])
+    lab = np.array(ds["label"])
+    if sorted(set(names)) != sorted(CORRUPTIONS):
+        raise RuntimeError(f"unexpected corruptions in mirror: {sorted(set(names))}")
+    raw = [d["bytes"] for d in ds["image"]]
+    with Pool(os.cpu_count()) as pool:
+        imgs = np.stack(pool.map(_decode_png, raw, chunksize=2000))
+    labels = np.tile(ref, 5)
+    for c in CORRUPTIONS:
+        idx = np.concatenate([np.where((names == c) & (lv == s))[0] for s in range(1, 6)])
+        if len(idx) != 50000 or not (lab[idx] == labels).all():
+            raise RuntimeError(f"{c}: mirror order does not match original CIFAR-10-C")
+        np.save(out / f"{c}.npy", imgs[idx])
+    np.save(out / "labels.npy", labels.astype(np.uint8))
+    shutil.rmtree(tmp)
 
 
 def load_cifar10(data_dir, device):

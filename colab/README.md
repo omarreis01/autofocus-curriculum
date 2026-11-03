@@ -17,16 +17,11 @@ cd autofocus-curriculum && git pull && pip install -q -r requirements.txt
 nvidia-smi --query-gpu=name,memory.total --format=csv
 ```
 
-## 2. Data (once; skips files that are already there)
+## 2. Data (each new runtime, ~1.5 min from Hugging Face mirrors)
 ```bash
 %%bash
 cd /content/autofocus-curriculum
-python -m src.data --data-dir /content/drive/MyDrive/auto-curriculum/data
-```
-Each new runtime: copy data to local disk (Drive reads are slow).
-```bash
-%%bash
-mkdir -p /content/data && cp -rn /content/drive/MyDrive/auto-curriculum/data/. /content/data/
+python -m src.data --data-dir /content/data
 ```
 
 ## 3. Smoke test
