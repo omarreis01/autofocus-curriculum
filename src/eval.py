@@ -6,8 +6,26 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from .data import CORRUPTIONS, SEEN, load_cifar10, load_cifar10c
-from .train import accuracy, amp_dtype, build_model
+from .data import CORRUPTIONS, SEEN, augment, load_cifar10, load_cifar10c
+from .train import accuracy, amp_dtype, autocast, build_model, prepare
+
+
+@torch.no_grad()
+def recalibrate_bn(model, data, n_batches=100, batch=512, seed=0):
+    # Training batches each come from one arm, so the running stats mix arms and do not fit clean
+    # images. Re-estimate them on clean training images (no test data) before every eval.
+    device = data["x_train"].device
+    for m in model.modules():
+        if isinstance(m, torch.nn.modules.batchnorm._BatchNorm):
+            m.reset_running_stats()
+            m.momentum = None
+    model.train()
+    g = torch.Generator(device=device).manual_seed(seed)
+    dtype = amp_dtype(device)
+    for _ in range(n_batches):
+        idx = torch.randint(0, len(data["y_train"]), (batch,), device=device, generator=g)
+        with autocast(dtype):
+            model(prepare(augment(data["x_train"][idx], g), 0.0, 1.0))
 
 
 def evaluate(model, data, c_dir, limit=None, batch=2000):
@@ -36,12 +54,17 @@ def main():
     p.add_argument("--out", required=True)
     p.add_argument("--limit", type=int, default=None, help="images per corruption x severity")
     p.add_argument("--batch", type=int, default=2000)
+    p.add_argument("--no-recal", action="store_true", help="keep the BN running stats from training")
     a = p.parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = build_model(device)
     model.load_state_dict(torch.load(a.ckpt, map_location=device, weights_only=False)["model"])
     t0 = time.time()
-    res = evaluate(model, load_cifar10(a.data_dir, device), Path(a.data_dir) / "CIFAR-10-C", a.limit, a.batch)
+    data = load_cifar10(a.data_dir, device)
+    if not a.no_recal:
+        recalibrate_bn(model, data)
+    res = evaluate(model, data, Path(a.data_dir) / "CIFAR-10-C", a.limit, a.batch)
+    res["bn_recal"] = not a.no_recal
     res["ckpt"] = a.ckpt
     res["sec"] = round(time.time() - t0, 1)
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
