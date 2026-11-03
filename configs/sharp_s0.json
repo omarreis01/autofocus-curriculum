@@ -1,0 +1,1 @@
+{"condition": "sharp", "seed": 0, "epochs": 30, "batch_size": 512, "lr": 0.2, "ckpt_every": 5}
