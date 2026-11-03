@@ -40,7 +40,9 @@ Ağa blur ve contrast seviyesini kendisi seçtirsek, bebek gibi önce bulanık v
 - 2026-11-03: İlk GPU koşusu (A100). Veri HF mirror'dan iner (CIFAR-10: `liangnanying/cifar-10-python`, md5 kontrollü; CIFAR-10-C: `robro/cifar10-c-parquet`, etiket sırası CIFAR-10 test ile birebir doğrulandı). Toplam ~1.5 dk; Zenodo/Toronto çok yavaştı.
 - Ölçüm: 2.0 s/epoch (eager), `--compile` 1.7 s ama 30 s derleme → kullanılmıyor. Tam CIFAR-10-C eval 15 s. Sharp 30 epoch: clean %93.2, seen %70.5, unseen %73.7 → F1 kabul geçti. Sonuç Drive `results/sharp/0/`.
 - Colab kontrolü: Colab MCP hücre ekler/çalıştırır ama durduramaz/restart edemez. Bunlar için Colab sekmesi bu session'ın Chrome tab grubunda olmalı (her yeni session yeni grup açar).
-- Sonraki iş: F2 teacher (Exp3.S + PG/SPG) ve F3 kontrol koşulları. Bütçe artık sorun değil; darboğaz zaman.
+- 2026-11-03: F2+F3 bitti (commit a689f01, 24 test). Exp3.S η=0.01 (Graves 1e-3 bizim 3k–10k adımda kıpırdamıyor), ε=0.05, α=1/t. 7 koşul × 3 seed × {short, full} config'i `configs/`. Kararlar: `docs/plans/colab-deneyler.md` "F2/F3 kararları".
+- 2026-11-03: Pilot başlatıldı (short, seed 0, 7 koşul; 6'sı aynı A100'de paralel, sonra shuffled). Sonuç/log: Drive `results/short/<koşul>/0/`, `logs/short_<koşul>_0.log`. Kullanıcı PC'yi kapattı; koşu yarıda kaldıysa aynı hücre `--resume` ile devam eder.
+- Sonraki iş: pilot sonuçlarını oku (teacher kol ısı haritası → H1, 7 koşul robustness), sonra F5 (3 seed).
 
 ## Sonraki adım
 - Kullanıcı makaleleri okuyup taslak notları düzeltir, arkadaşına gönderir.
