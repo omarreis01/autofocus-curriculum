@@ -27,6 +27,14 @@ DEFAULTS = {
     "sigmas": [0.0, 0.75, 1.5, 3.0],
     "contrasts": [1.0, 0.6, 0.35, 0.2],
     "ckpt_every": 5,
+    # teacher (Exp3.S); eta is 10x Graves' 1e-3 so the policy can move within 3k-10k steps
+    "signal": "pg",
+    "eta": 0.01,
+    "eps": 0.05,
+    "alpha": None,  # None: Graves' 1/t share rate
+    "reward_window": 1000,
+    "staircase_frac": 0.5,
+    "arms_path": None,
 }
 
 
@@ -63,9 +71,17 @@ def prepare(x_uint8, sigma, c):
 
 
 @torch.no_grad()
-def batch_loss(net, x, y, dtype):
-    with autocast(dtype):
-        return F.cross_entropy(net(x), y).float()
+def measure_loss(net, model, x, y, dtype):
+    # Train-mode forward (batch statistics, like the training loss) that leaves BN running stats untouched.
+    bns = [m for m in model.modules() if isinstance(m, torch.nn.modules.batchnorm._BatchNorm)]
+    for m in bns:
+        m.track_running_stats = False
+    try:
+        with autocast(dtype):
+            return F.cross_entropy(net(x), y).float()
+    finally:
+        for m in bns:
+            m.track_running_stats = True
 
 
 @torch.no_grad()
@@ -144,6 +160,9 @@ def train(cfg, data, schedule, out_dir, resume=False, compile=False):
         # Per-epoch generator: data order and augmentation are reproducible after resume.
         g = torch.Generator(device=device).manual_seed(cfg["seed"] * 100_003 + epoch)
         perm = torch.randperm(n, device=device, generator=g)
+        if schedule.wants_fresh_batch:  # separate stream so the training data order is unchanged
+            g2 = torch.Generator(device=device).manual_seed(10**9 + cfg["seed"] * 100_003 + epoch)
+            perm2 = torch.randperm(n, device=device, generator=g2)
         loss_sum = torch.zeros((), device=device)
         for i in range(steps_per_epoch):
             step = epoch * steps_per_epoch + i
@@ -154,10 +173,16 @@ def train(cfg, data, schedule, out_dir, resume=False, compile=False):
             y = data["y_train"][idx]
             for group in opt.param_groups:
                 group["lr"] = lr_at(step, total, cfg["lr"], cfg["warmup_frac"])
-            loss = train_step(net, opt, scaler, x, y, dtype)
-            info = {"step": step, "loss": loss}
+            info = {"step": step}
+            if schedule.wants_fresh_batch:
+                idx2 = perm2[i * bs : (i + 1) * bs]
+                x2, y2 = prepare(augment(data["x_train"][idx2], g2), *arms[arm]), data["y_train"][idx2]
+                info["fresh_before"] = measure_loss(net, model, x2, y2, dtype)
+            loss = info["loss"] = train_step(net, opt, scaler, x, y, dtype)
             if schedule.wants_loss_after:
-                info["loss_after"] = batch_loss(net, x, y, dtype)
+                info["loss_after"] = measure_loss(net, model, x, y, dtype)
+            if schedule.wants_fresh_batch:
+                info["fresh_after"] = measure_loss(net, model, x2, y2, dtype)
             schedule.update(arm, info)
             loss_sum += loss
         train_loss = loss_sum.item() / steps_per_epoch
@@ -170,6 +195,7 @@ def train(cfg, data, schedule, out_dir, resume=False, compile=False):
         if (epoch + 1) % cfg["ckpt_every"] == 0 or epoch + 1 == cfg["epochs"]:
             checkpoint(epoch + 1)
     np.save(out_dir / "arms.npy", arm_log)
+    schedule.save(out_dir)
     return model
 
 
@@ -187,7 +213,8 @@ def main():
     torch.backends.cudnn.benchmark = True
     print(f"device {device} {torch.cuda.get_device_name() if device.type == 'cuda' else ''}", flush=True)
     data = fake_cifar10(2048, 512, device) if a.fake_data else load_cifar10(a.data_dir, device)
-    schedule = make_schedule(cfg, arm_grid(cfg["sigmas"], cfg["contrasts"]))
+    total = len(data["y_train"]) // cfg["batch_size"] * cfg["epochs"]
+    schedule = make_schedule(cfg, arm_grid(cfg["sigmas"], cfg["contrasts"]), total)
     train(cfg, data, schedule, a.out_dir, resume=a.resume, compile=a.compile)
 
 

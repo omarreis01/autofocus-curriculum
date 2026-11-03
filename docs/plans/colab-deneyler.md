@@ -45,6 +45,13 @@ Kaynak: `docs/project_proposal.pdf`, `docs/okuma/okuma_notlari_curriculum.md`.
 - T3.2 Karıştırılmış bandit schedule: bir bandit koşusunun kol logunu zamanda karıştırıp tekrar oynatır. Kol sayıları birebir aynı kalır.
 - Kabul: her koşul aynı adım sayısını ve aynı LR schedule'ı kullanır (testle).
 
+### F2/F3 kararları (2026-11-03, kullanıcı onayı olmadan; geri almak = config)
+- Staircase: köşegen (σ3,c0.2)→(1.5,0.35)→(0.75,0.6)→(0,1), eğitimin ilk %50'sinde 4 eşit adım, sonra keskin. Oran config'te.
+- Reverse: staircase'in zamanda tersi (aynı kol sayıları).
+- Shuffled: aynı seed ve bütçedeki teacher_pg koşusunun `arms.npy` dosyası, zamanda karıştırılır.
+- PG/SPG ölçüm forward'ları BatchNorm running stats'ı değiştirmez; teacher koşusu sabit koldan sadece kol seçimiyle ayrılır.
+- η: Graves 1e-3 kullanır ama ~10^5 adım için; bizde 3k–10k adım var, η daha büyük seçildi (değer kodda/config'te).
+
 ### F4 — GPU kıyası ve pilot (~10 CU)
 - T4.1 T4, L4 ve A100'de 1 epoch süresini ölç. Kaynaklar panelinden saatlik CU'yu oku. "CU / koşu" en düşük GPU'yu seç.
 - T4.2 Pilot: 7 koşul × 1 seed × kısa bütçe. Hata ve log kontrolü.

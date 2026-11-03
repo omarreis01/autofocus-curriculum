@@ -1,0 +1,1 @@
+{"seed": 2, "epochs": 100, "condition": "shuffled", "arms_path": "/content/drive/MyDrive/auto-curriculum/results/full/teacher_pg/2/arms.npy"}
