@@ -42,7 +42,8 @@ Ağa blur ve contrast seviyesini kendisi seçtirsek, bebek gibi önce bulanık v
 - Colab kontrolü: Colab MCP hücre ekler/çalıştırır ama durduramaz/restart edemez. Bunlar için Colab sekmesi bu session'ın Chrome tab grubunda olmalı (her yeni session yeni grup açar).
 - 2026-11-03: F2+F3 bitti (commit a689f01, 24 test). Exp3.S η=0.01 (Graves 1e-3 bizim 3k–10k adımda kıpırdamıyor), ε=0.05, α=1/t. 7 koşul × 3 seed × {short, full} config'i `configs/`. Kararlar: `docs/plans/colab-deneyler.md` "F2/F3 kararları".
 - 2026-11-03: Pilot başlatıldı (short, seed 0, 7 koşul; 6'sı aynı A100'de paralel, sonra shuffled). Sonuç/log: Drive `results/short/<koşul>/0/`, `logs/short_<koşul>_0.log`. Kullanıcı PC'yi kapattı; koşu yarıda kaldıysa aynı hücre `--resume` ile devam eder.
-- Sonraki iş: pilot sonuçlarını oku (teacher kol ısı haritası → H1, 7 koşul robustness), sonra F5 (3 seed).
+- 2026-11-03: Pilot bitti (7/7). Rapor: https://claude.ai/artifact/4uPcbPyQs3RmhzjeWz8FAi . Bulgu 1: BN uyumsuzluğu — batch başına tek kol, eval'de karışık running stats; random/teacher/shuffled/reverse clean %13–60. Temiz train verisiyle BN recal sonrası normal (random 89.1, teacher_spg 87.2). Bulgu 2: teacher bulanık→keskin seçmiyor; uniformdan en bozuk kola (σ3/c0.2) gidiyor (H1'in tersi, 1 seed). Bulgu 3: recal sonrası random ≈ teacher ≈ shuffled (C ~%79–82), sharp 69/73.
+- Sonraki iş: BN düzeltme kararı (öneri: eval öncesi temiz train BN recal, `src/eval.py`), sonra F5.
 
 ## Sonraki adım
 - Kullanıcı makaleleri okuyup taslak notları düzeltir, arkadaşına gönderir.
