@@ -48,7 +48,8 @@ Ağa blur ve contrast seviyesini kendisi seçtirsek, bebek gibi önce bulanık v
 - 2026-11-04 gece: Kullanıcı "hiçbir şeyi atlamayalım" dedi → genişletilmiş plan `docs/plans/genis-deneyler.md` (A: teacher varyantları + ALP-GMM, B: per-image karışım, GroupNorm, eksen ablasyonu, C: shape/frekans bias + adversarial). Deney günlüğü: `docs/experiments.md`. Kod ajanları başlamıştı, kullanıcı "dur, daha başlamayalım" dedi → durduruldu; yarım kod `git stash` içinde ("WIP: extended experiments"). Plana kullanıcıyla birlikte tekrar bakılacak.
 - F6 yarıda kaldı (PC kapandı, wave 1 seed 0+1 ~epoch 40). Devam: yeni runtime → A100, Drive, `python -m src.data --data-dir /content/data`, sonra `nohup bash -c "bash colab/run_budget.sh full 0 1; bash colab/run_budget.sh full 2" &` (`--resume` checkpoint'ten sürer; checkpoint her 5 epoch).
 - 2026-11-08: F6 bitti (F5 ile aynı sıralama; random en iyi: 92.2/85.3/84.4). Kullanıcı genişletilmiş planı onayladı; kod commit 27d22f1 (52 test). Genişletilmiş koşu başladı: `colab/run_conds.sh short 12 '0 1 2' <13 koşul>` + tüm eski checkpoint'lerde probe; log Drive `logs/ext_runner.log`, ~1 s 15 dk. Colab MCP bağlanmadı; Colab doğrudan Chrome eklentisiyle sürülüyor (yeni notebook Untitled17).
-- Sonraki iş: genişletilmiş sonuçları topla (`src.collect`), raporu güncelle, en iyi varyantları 100 ep'te koş.
+- 2026-11-08: Genişletilmiş deneyler bitti (13 koşul × 3 seed + 81 checkpoint'te probe). Rapor v3: https://claude.ai/artifact/4uPcbPyQs3RmhzjeWz8FAi . Ana sonuç: hiçbir teacher bulanık→keskin seçmiyor; hard-first PG ölçeğinden (rpg ile kayboluyor). Robustness ve shape bias sırayla değil blur maruziyetiyle geliyor; random ≈ en iyi. Per-image karışım contrast'ı gerçek yapıyor (88.9). Ayrıntı: `docs/experiments.md` #7–17. Özet: `src/digest.py`.
+- Sonraki iş: (isteğe bağlı) en iyi yeni varyantlar 100 ep; final rapor + 1 sayfalık özet.
 
 ## Sonraki adım
 - Kullanıcı makaleleri okuyup taslak notları düzeltir, arkadaşına gönderir.

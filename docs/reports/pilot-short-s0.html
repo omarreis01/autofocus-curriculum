@@ -5,171 +5,236 @@
 /* Layout: one reading column; charts and tables scroll inside their own boxes */
 :root{
   --bg:#f6f7f9; --panel:#ffffff; --fg:#1b2230; --muted:#5d6879; --line:#dde2ea;
-  --accent:#2f5bd3; --accent2:#c06a1b; --good:#1f8a52; --bad:#c2412d; --warn:#a86b00;
-  --heat0:#eef1f6; --heat1:#2f5bd3;
+  --accent:#2f5bd3; --accent2:#c06a1b; --accent3:#2a8a74; --good:#1f8a52; --bad:#c2412d; --warn:#a86b00;
   --display:"Fraunces",Georgia,serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#12161d; --panel:#1a2029; --fg:#e4e8ef; --muted:#97a2b3; --line:#2b3340;
-  --accent:#7d9cf5; --accent2:#eba05a; --good:#5cc68f; --bad:#ef7a66; --warn:#e0a83b; --heat0:#1f2631; --heat1:#7d9cf5; color-scheme:dark}}
+  --accent:#7d9cf5; --accent2:#eba05a; --accent3:#5fc4a8; --good:#5cc68f; --bad:#ef7a66; --warn:#e0a83b; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#12161d; --panel:#1a2029; --fg:#e4e8ef; --muted:#97a2b3; --line:#2b3340;
-  --accent:#7d9cf5; --accent2:#eba05a; --good:#5cc68f; --bad:#ef7a66; --warn:#e0a83b; --heat0:#1f2631; --heat1:#7d9cf5; color-scheme:dark}
+  --accent:#7d9cf5; --accent2:#eba05a; --accent3:#5fc4a8; --good:#5cc68f; --bad:#ef7a66; --warn:#e0a83b; color-scheme:dark}
 body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
-main{max-width:880px;margin:0 auto;display:grid;gap:24px}
+main{max-width:900px;margin:0 auto;display:grid;gap:24px}
 h1{font:600 2rem/1.15 var(--display);margin:0 0 6px;text-wrap:balance}
 h2{font:600 1.15rem/1.3 var(--body);margin:0 0 10px;text-wrap:balance}
-p{margin:0 0 10px;max-width:68ch}
+h3{font:600 .95rem/1.3 var(--body);margin:14px 0 6px}
+p{margin:0 0 10px;max-width:70ch}
 .meta{color:var(--muted);font-size:.82rem;font-family:var(--mono)}
 section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px;min-width:0}
 .scroll{overflow-x:auto}
-table{border-collapse:collapse;font-variant-numeric:tabular-nums;width:100%;font-size:.88rem}
-th,td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+table{border-collapse:collapse;font-variant-numeric:tabular-nums;width:100%;font-size:.84rem}
+th,td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
 th:first-child,td:first-child{text-align:left}
-th{font-weight:500;color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
+th{font-weight:500;color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}
+tr.grp td{color:var(--muted);font:500 .72rem var(--mono);text-transform:uppercase;letter-spacing:.05em;padding-top:12px}
 .best{color:var(--good);font-weight:600}
 code,.mono{font-family:var(--mono);font-size:.85em}
 .pill{display:inline-block;font:500 .75rem var(--mono);padding:2px 8px;border-radius:99px;border:1px solid currentColor}
-.pill.good{color:var(--good)} .pill.bad{color:var(--bad)} .pill.warn{color:var(--warn)} .pill.run{color:var(--accent)}
+.pill.good{color:var(--good)} .pill.bad{color:var(--bad)} .pill.warn{color:var(--warn)}
 .status{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-ul,ol{margin:0;padding-left:20px;display:grid;gap:7px}
-.since{border-left:3px solid var(--accent);background:transparent}
+ul,ol{margin:0;padding-left:20px;display:grid;gap:8px}
+.since{border-left:3px solid var(--accent)}
+.answer{border-left:3px solid var(--good)}
 .legend{display:flex;flex-wrap:wrap;gap:14px;color:var(--muted);font-size:.8rem;margin-top:6px}
 .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 .dec{display:grid;gap:10px}
 .dec div{border-left:3px solid var(--line);padding-left:12px}
 details summary{cursor:pointer;color:var(--muted)}
-figure{margin:0}
-figcaption{font-weight:500;margin-bottom:6px}
+.ev{color:var(--muted);font-size:.82rem}
 </style>
 
 <main>
 <header>
-  <h1>Curriculum runs, short budget</h1>
-  <p class="meta">updated 2026-11-04 · A100 · ResNet-18 / CIFAR-10 · 7 conditions × 3 seeds × 30 epochs · commit 4c98857 · Drive results/short/</p>
+  <h1>Curriculum experiments: full results</h1>
+  <p class="meta">updated 2026-11-08 · A100 · ResNet-18 / CIFAR-10 · 20 conditions × 3 seeds × 30 epochs + 7 conditions × 3 seeds × 100 epochs · 81 checkpoints probed · commits 27d22f1…b55b106</p>
   <div class="status">
-    <span class="pill good">F5 done: 21 / 21 runs</span>
-    <span class="pill good">BN eval bug fixed</span>
-    <span class="pill bad">H1 rejected here: teacher goes hard-first</span>
-    <span class="pill run">F6 (100 epochs) running</span>
+    <span class="pill good">F5, F6, extended: all done</span>
+    <span class="pill good">no missing eval or probe</span>
+    <span class="pill bad">H1 rejected for every teacher</span>
+    <span class="pill warn">FGSM numbers unreliable (see caveats)</span>
   </div>
 </header>
 
 <section class="since">
   <h2>Since last time</h2>
   <ul>
-    <li>Eval now recalibrates BatchNorm on clean training images (option A). Seed 0 numbers re-made with it.</li>
-    <li>Seeds 1 and 2 finished. All three seeds agree; spread is ≤0.8 points.</li>
-    <li>F6 (full budget, 100 epochs) started on the A100 at 2026-11-04, ~2 h.</li>
+    <li>F6 (100 epochs) finished. Same ranking as 30 epochs.</li>
+    <li>13 new conditions × 3 seeds: teacher variants (A), training regime (B). 3 runs died with CUDA out-of-memory at 12 parallel runs; re-run from checkpoint at 6 parallel.</li>
+    <li>New probes on all 81 checkpoints: low/high-pass accuracy, shape bias (hybrid images), FGSM and PGD-10.</li>
   </ul>
+</section>
+
+<section class="answer">
+  <h2>Answer to the research question</h2>
+  <p><b>Does the network choose blurry/low-contrast first?</b> No. No teacher we tried does this. Raw learning progress (PG, SPG) drives the teacher to the <i>hardest</i> arm. Relative progress (PG ÷ loss) and ALP-GMM stay near uniform.</p>
+  <p><b>Does it give robustness?</b> Exposure to blur gives robustness: CIFAR-10-C, adversarial PGD, and a stronger low-frequency (shape-like) bias. The order of the exposure does not add anything: random-per-batch is as good as or better than every teacher and every hand schedule.</p>
 </section>
 
 <section>
   <h2>Findings</h2>
   <ol>
-    <li><b>The teacher does not start blurry.</b> In all 3 seeds, both teachers start near uniform and then move to the most degraded arm (σ 3 px, contrast 0.2). Near the end, when the learning rate goes to zero, the choice spreads out again. H1 (blurry-first) does not hold with this reward.</li>
-    <li><b>Random per batch is the best condition.</b> Highest CIFAR-10-C (81.4 seen, 82.2 unseen) at 89.4 clean. No ordered schedule beats it. This matches Jang &amp; Tong 2024 (mixed blur is a strong baseline).</li>
-    <li><b>Order adds little.</b> teacher_pg vs shuffled (same arms, random order): +0.6 clean, +0.4 seen, +0.3 unseen. Spread is 0.1–0.3, so the gain is small but present in all seeds.</li>
-    <li><b>Blur training gives noise robustness.</b> Mean over the 4 noise corruptions: sharp 55.5, random 76.4, teachers ~75. The gain is not only on "seen" corruptions.</li>
-    <li><b>Contrast training does not help contrast.</b> CIFAR-10-C contrast: sharp 73.8, random 69.3, teacher_pg 64.1. In training, BN uses batch statistics and undoes a global contrast change, so the network never really sees low contrast.</li>
+    <li><b>Hard-first comes from the reward scale.</b> With raw PG the teacher puts 71–74% of batches on the hardest arm in the middle of training. With relative PG (<code>teacher_rpg</code>) it puts 1–3% there and stays near uniform. η changes only the speed (η=0.003 slower, η=0.03 faster and swings back). Without importance weighting the drift is slow (13–14% late).</li>
+    <li><b>Near-uniform teachers are as good as random.</b> teacher_rpg 90.0 / 81.1 / 82.4 and ALP-GMM 89.0 / 82.1 / 82.0 vs random 89.4 / 81.4 / 82.2 (clean / C-seen / C-unseen, 30 ep). Hard-first teachers lose 3–5 points clean.</li>
+    <li><b>Blur is the axis that matters.</b> random_blur (contrast fixed at 1) gets 82.1 / 81.9 C-seen/unseen. random_contrast (no blur) gets 68.2 / 73.6, the same as sharp.</li>
+    <li><b>Contrast becomes real only per image or without BatchNorm.</b> CIFAR-10-C contrast: random per batch 69.3, random per image 88.9, sharp with GroupNorm 87.6, sharp with BN 73.8. With BN, a batch-wide contrast change is normalized away during training.</li>
+    <li><b>Shape bias follows exposure, not order.</b> Share of hybrid images classified by their low-frequency part (σ=2): sharp 6%, random 23%, teacher_pg 54%, shuffled (same arms, random order) 60%. At 100 epochs: teacher_pg 67%, shuffled 69%. The longer the model sees heavy blur, the higher the bias.</li>
+    <li><b>Blur training helps small adversarial attacks.</b> PGD-10 at ε=1/255: sharp 34.8%, random 59.5%, teacher_pg_noiw 59.7%, teacher_pg 49.3%. Reverse (blur at the end) is worst: 26.7%. random_image is low (37.0%) although its CIFAR-10-C is high.</li>
+    <li><b>There is a trade-off.</b> Models with a high shape bias lose high-frequency accuracy: high-pass σ=1 accuracy sharp 80%, teacher_pg 40%, shuffled 36%.</li>
+    <li><b>Hand schedule length:</b> a longer blurry phase (staircase 75%) gives more robustness (78.9 / 80.3) and less clean accuracy (88.5); 25% is close to sharp.</li>
   </ol>
 </section>
 
 <section>
-  <h2>Accuracy by condition</h2>
-  <p class="meta">Mean of 3 seeds; bar = min–max of seeds. Seen = 5 blur types + contrast; unseen = other 13 corruptions.</p>
-  <div class="scroll"><canvas id="dots"></canvas></div>
-  <div class="legend"><span><i class="sw" style="background:var(--fg)"></i>clean</span><span><i class="sw" style="background:var(--accent)"></i>C seen</span><span><i class="sw" style="background:var(--accent2)"></i>C unseen</span></div>
-  <details style="margin-top:12px"><summary>Table</summary><div class="scroll" style="margin-top:8px"><table id="tbl"></table></div></details>
+  <h2>Robustness vs clean accuracy (30 epochs)</h2>
+  <p class="meta">x = clean accuracy, y = mean CIFAR-10-C (seen + unseen)/2. Mean of 3 seeds. Hover a point for its name.</p>
+  <div class="scroll"><canvas id="scatter"></canvas></div>
+  <div class="legend"><span><i class="sw" style="background:var(--fg)"></i>baselines</span><span><i class="sw" style="background:var(--accent2)"></i>teachers</span><span><i class="sw" style="background:var(--accent)"></i>random variants</span><span><i class="sw" style="background:var(--accent3)"></i>hand schedules</span></div>
 </section>
 
 <section>
-  <h2>What the teacher chose over training</h2>
-  <p>Share of batches on the most degraded arm (σ 3, c 0.2) per epoch. Uniform would be 0.06. One line per seed.</p>
+  <h2>Where the teachers go</h2>
+  <p>Share of batches on the hardest arm (σ 3, contrast 0.2), per fifth of training, mean of 3 seeds. Uniform = 0.06.</p>
   <div class="scroll"><canvas id="worst"></canvas></div>
-  <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>teacher_pg</span><span><i class="sw" style="background:var(--accent2)"></i>teacher_spg</span></div>
-  <details style="margin-top:12px"><summary>Full arm heatmaps, seed 0</summary><div id="heat" style="display:grid;gap:16px;margin-top:10px"></div></details>
+  <div class="legend" id="worstLegend"></div>
+</section>
+
+<section>
+  <h2>Shape bias and adversarial robustness</h2>
+  <p class="meta">Bars: shape bias at σ=2 (share of hybrids classified by the low-frequency image). Dots: PGD-10 accuracy at ε=1/255. 30 epochs, mean of 3 seeds.</p>
+  <div class="scroll"><canvas id="bars"></canvas></div>
+  <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>shape bias σ=2</span><span><i class="sw" style="background:var(--accent2)"></i>PGD ε=1/255</span></div>
+</section>
+
+<section>
+  <h2>All numbers</h2>
+  <p class="meta">mean ± std over 3 seeds, %. Noise = mean of 4 noise corruptions. Bias σ2 = shape bias. Worst late = hardest-arm share in the last fifth.</p>
+  <div class="scroll"><table id="tbl"></table></div>
+</section>
+
+<section>
+  <h2>Caveats</h2>
+  <div class="dec">
+    <div><b>FGSM looks too weak.</b> For sharp 100 ep, FGSM at 2/255 (53.6%) is higher than PGD at 1/255 (44.9%). Likely gradient masking on very confident models. Use PGD numbers only.</div>
+    <div><b>Shape bias is a CIFAR proxy.</b> Low-frequency of image A + high-frequency of image B, not Geirhos style transfer. It measures low- vs high-frequency reliance.</div>
+    <div><b>ALP-GMM is quantized</b> to the nearest of the 16 arms; its continuous samples are logged.</div>
+    <div><b>GroupNorm costs clean accuracy</b> at 30 epochs (sharp 90.2 vs 93.2 with BN). GN results compare within GN only.</div>
+    <div><b>random_image arm log</b> stores only the first image's arm per batch (unbiased histogram).</div>
+  </div>
 </section>
 
 <section>
   <h2>Decisions made without you</h2>
   <div class="dec">
-    <div><b>BN recalibration before every eval.</b> 100 batches of clean training images, same for all conditions. Undo: <code>python -m src.eval --no-recal</code>.</div>
-    <div><b>F6 in two waves.</b> 12 runs use 29 of 40 GB, so seeds 0+1 run first, then seed 2. Undo: none needed.</div>
-    <div><b>Kept PG and SPG as specified.</b> No change to the reward yet, although it prefers hard arms (see below).</div>
+    <div><b>OOM re-runs at 6 parallel</b> from checkpoint. Undo: none needed; results identical in setup.</div>
+    <div><b>High-pass = x − Gaussian(x) + channel mean</b> (Wang et al. 2020 use the raw residual). Undo: remove the mean term in <code>src/probe.py</code>.</div>
+    <div><b>Reported shape bias at σ=2.</b> σ=1 keeps too much of image A (all models &gt;25%); σ=3 compresses differences. All three are in the JSON.</div>
   </div>
 </section>
 
 <section>
-  <h2>Open questions for after F6</h2>
+  <h2>Possible next steps</h2>
   <ul>
-    <li><b>Is "hard-first" a property of the PG reward?</b> Loss drops more on high-loss batches, so raw PG favors the hardest arm. A relative signal (PG ÷ loss before) would test this. Cost: one more teacher condition × 3 seeds.</li>
-    <li><b>Make contrast real.</b> Options: apply contrast per image inside mixed batches, or normalize with fixed statistics. Without this, the contrast axis is mostly noise for the teacher.</li>
-    <li><b>Shape bias</b> is still deferred.</li>
+    <li>100-epoch runs for the strongest new variants: random_image, random_blur, teacher_rpg, teacher_alp (~40 min).</li>
+    <li>Per-image teacher: the teacher picks a distribution per batch instead of one arm. This combines finding 4 with the teacher.</li>
+    <li>Final written report and the 1-page summary for the advisor.</li>
   </ul>
 </section>
 
 <details>
   <summary>How the numbers were made</summary>
-  <p class="mono" style="margin-top:8px">train: colab/run_budget.sh short 0..2 · eval: src.eval with BN recal (reset stats, momentum=None, train mode, 100×512 clean augmented train images) on 10k clean + 19×5×10k CIFAR-10-C · aggregate: src/collect.py → Drive results/short_summary.json</p>
+  <p class="mono" style="margin-top:8px">train: colab/run_budget.sh, colab/run_conds.sh · eval: src/eval.py with BN recalibration on clean train images · probe: src/probe.py (BN recal, low/high-pass σ 1–3, ~10k hybrids, FGSM full test set, PGD-10 on 2000 images, ε 1/2/4 /255) · aggregate: src/collect.py → src/digest.py · raw: Drive results/&lt;budget&gt;/&lt;cond&gt;/&lt;seed&gt;/{eval,probe}.json, results/{short,full}_summary.json · log: docs/experiments.md</p>
 </details>
 </main>
 
 <script>
-const R={sharp:{clean:[.9296,.9332,.9318],seen:[.69468,.701,.69253],unseen:[.73313,.7342,.73087]},
-staircase:{clean:[.9042,.9072,.909],seen:[.75176,.76689,.75395],unseen:[.78653,.78707,.78662]},
-reverse:{clean:[.8419,.8454,.8449],seen:[.78172,.78241,.779],unseen:[.7227,.70424,.71186]},
-random:{clean:[.8912,.8967,.8953],seen:[.8111,.81807,.81293],unseen:[.82055,.82241,.82276]},
-shuffled:{clean:[.8379,.8434,.845],seen:[.79487,.79678,.79946],unseen:[.78279,.78595,.78551]},
-teacher_pg:{clean:[.844,.851,.8479],seen:[.79902,.80279,.80191],unseen:[.7861,.78968,.78716]},
-teacher_spg:{clean:[.8716,.8695,.8682],seen:[.80798,.81051,.8126],unseen:[.80493,.80194,.8031]}};
-const W={teacher_pg:[[.12,.11,.09,.03,.04,.04,.02,.09,.15,.2,.25,.41,.47,.59,.76,.76,.81,.82,.75,.81,.74,.74,.77,.73,.65,.59,.48,.44,.48,.49],[.06,.07,0,.02,.02,.01,.05,.05,.12,.22,.26,.38,.59,.53,.65,.76,.78,.81,.75,.81,.74,.65,.67,.71,.63,.6,.58,.57,.51,.46],[.04,.09,.05,.01,.03,0,.04,.09,.14,.25,.37,.55,.59,.7,.77,.75,.82,.79,.81,.74,.81,.79,.6,.7,.66,.59,.47,.54,.48,.33]],
-teacher_spg:[[.08,.06,.06,.02,.01,.04,.02,.07,.06,.08,.1,.19,.26,.23,.52,.47,.48,.56,.51,.56,.63,.66,.75,.72,.69,.7,.7,.61,.62,.71],[.06,.08,.05,.05,.06,.04,.07,.06,.04,.11,.14,.14,.23,.15,.18,.28,.41,.4,.53,.63,.61,.56,.62,.68,.65,.66,.67,.67,.61,.6],[.04,.05,.03,.02,.04,.03,.04,.09,.1,.16,.16,.27,.27,.42,.46,.4,.51,.55,.58,.58,.69,.6,.54,.63,.64,.66,.61,.66,.65,.57]]};
-const H={teacher_pg:[[7,6,4,5,3,5,9,2,7,5,8,7,5,5,7,12],[9,3,4,8,4,4,9,3,4,8,3,7,3,10,7,11],[3,8,5,5,0,4,5,6,8,4,5,7,5,15,8,9],[5,6,4,13,0,2,4,12,1,4,11,3,10,11,8,3],[1,5,2,15,0,4,1,8,1,3,11,6,13,17,6,4],[3,1,1,11,0,2,6,10,0,2,10,9,15,15,8,4],[4,2,3,8,1,2,3,6,2,2,4,7,16,26,9,2],[1,1,0,2,0,2,3,5,3,2,2,6,18,19,24,9],[5,2,0,3,0,1,0,3,0,0,2,3,21,21,21,15],[1,1,2,1,0,3,1,0,1,2,0,3,6,23,34,19],[0,2,1,2,1,2,3,1,2,1,2,2,4,20,30,24],[2,1,1,1,2,0,0,3,1,1,2,2,8,10,23,40],[1,1,1,3,1,2,1,1,1,0,0,0,6,8,25,46],[3,1,1,2,2,1,1,0,2,3,1,0,4,5,14,57],[1,1,1,0,1,3,2,0,1,0,1,0,3,4,5,74],[1,1,1,1,0,2,1,1,1,2,1,2,1,1,7,74],[1,1,1,1,1,0,0,1,0,0,2,3,1,4,2,79],[1,1,1,1,2,0,0,2,1,1,1,0,1,1,4,80],[2,2,3,1,1,2,3,2,2,1,2,1,1,1,0,73],[0,0,1,2,1,2,0,0,2,2,1,1,1,1,4,79],[1,1,0,2,2,1,2,4,1,3,0,2,1,3,2,72],[2,2,2,0,2,0,4,1,1,0,1,2,5,0,3,72],[0,2,2,3,1,3,0,0,2,1,1,1,5,1,0,75],[3,2,3,0,0,1,0,2,0,3,3,1,3,3,2,71],[3,3,1,3,2,5,4,0,2,0,1,2,2,2,4,63],[4,4,2,2,3,3,0,3,3,2,6,2,2,1,3,57],[6,2,1,2,3,1,2,3,3,1,10,1,1,6,8,47],[2,4,0,1,3,7,4,9,3,4,7,1,0,8,1,43],[5,2,3,0,1,2,6,4,3,5,7,5,2,2,3,47],[4,0,1,5,1,4,4,5,2,2,9,5,1,4,2,48]],
-teacher_spg:[[8,6,3,5,4,6,4,6,8,4,9,6,5,7,8,8],[8,3,4,5,7,3,8,4,9,6,4,5,4,11,10,6],[3,9,7,2,0,6,8,5,6,8,4,6,14,8,5,6],[5,6,10,7,2,4,12,5,3,12,2,9,5,8,5,2],[2,5,6,12,5,3,6,6,8,6,8,8,11,4,6,1],[3,2,7,13,7,4,8,8,8,7,6,3,7,7,3,4],[6,5,6,8,8,3,7,9,6,2,4,9,10,8,4,2],[2,0,2,10,7,2,5,5,6,3,4,6,10,23,5,7],[7,1,5,6,5,3,3,5,5,4,5,6,12,14,10,6],[2,3,5,6,1,0,5,4,4,3,3,10,19,14,10,8],[3,5,9,4,2,6,4,5,4,2,2,8,15,6,12,10],[4,3,4,7,5,1,2,3,2,4,2,10,11,9,12,18],[2,5,3,2,3,2,2,3,3,3,4,11,10,11,8,25],[4,4,3,4,4,2,3,2,3,4,2,2,15,11,12,22],[2,4,2,2,2,2,2,2,1,1,2,2,12,5,6,50],[2,2,3,2,5,0,2,1,4,3,2,1,16,4,4,46],[1,4,0,0,1,3,3,3,2,1,2,3,14,2,11,47],[2,1,2,1,2,1,1,1,1,1,2,3,12,8,5,54],[3,4,1,4,4,0,3,2,1,1,1,3,10,3,8,49],[0,1,2,3,0,1,2,2,2,1,1,6,11,7,4,54],[2,0,1,4,1,3,1,3,4,0,2,5,3,2,5,61],[1,2,3,0,2,1,2,2,0,2,2,5,7,1,3,64],[0,2,1,5,0,0,2,1,2,1,0,1,7,0,2,73],[3,1,1,2,1,0,0,0,2,2,0,3,8,2,2,70],[2,1,1,0,3,5,0,1,1,6,2,1,1,3,3,67],[2,2,2,2,1,4,0,1,3,1,1,1,6,2,1,68],[3,3,1,0,2,4,1,1,0,2,0,3,5,1,3,68],[1,1,0,3,1,1,1,5,4,3,1,0,14,1,2,59],[1,3,2,2,2,0,0,1,2,1,5,0,11,3,4,60],[2,1,1,0,2,0,3,2,0,3,1,1,4,5,3,69]]};
+const D={"short:random":{"clean":[89.4,0.2],"seen_mean":[81.4,0.3],"unseen_mean":[82.2,0.1],"noise":[76.4,0.1],"contrast":[69.3,0.8],"bias2":[22.7,1.2],"high1":[66.1,2.4],"pgd1":[59.5,1.0],"worst":[0.07,0.07,0.06,0.07,0.08]},
+"short:random_blur":{"clean":[90.8,0.3],"seen_mean":[82.1,0.3],"unseen_mean":[81.9,0.2],"noise":[73.8,0.1],"contrast":[67.2,0.6],"bias2":[23.3,1.2],"high1":[66.8,0.9],"pgd1":[56.4,0.5],"worst":[0,0,0,0,0]},
+"short:random_contrast":{"clean":[92.7,0.2],"seen_mean":[68.2,0.3],"unseen_mean":[73.6,0.3],"noise":[57.4,1.1],"contrast":[76.1,1.0],"bias2":[4.2,0.1],"high1":[81.6,1.5],"pgd1":[31.2,1.2],"worst":[0,0,0,0,0]},
+"short:random_image":{"clean":[89.6,0.0],"seen_mean":[86.9,0.1],"unseen_mean":[81.2,0.2],"noise":[71.7,0.7],"contrast":[88.9,0.1],"bias2":[22.3,0.8],"high1":[81.8,0.1],"pgd1":[37.0,1.0],"worst":[0.06,0.06,0.07,0.06,0.06]},
+"short:random_gn":{"clean":[84.7,0.2],"seen_mean":[83.0,0.2],"unseen_mean":[79.7,0.1],"noise":[76.2,0.1],"contrast":[84.8,0.2],"bias2":[41.1,1.6],"high1":[70.7,1.2],"pgd1":[49.4,0.3],"worst":[0.07,0.07,0.06,0.07,0.08]},
+"short:sharp":{"clean":[93.2,0.1],"seen_mean":[69.6,0.4],"unseen_mean":[73.3,0.1],"noise":[55.5,0.1],"contrast":[73.8,0.6],"bias2":[6.2,0.4],"high1":[80.2,0.8],"pgd1":[34.8,0.6],"worst":[0,0,0,0,0]},
+"short:sharp_gn":{"clean":[90.2,0.3],"seen_mean":[79.6,0.4],"unseen_mean":[78.8,0.5],"noise":[69.4,1.4],"contrast":[87.6,0.6],"bias2":[14.6,1.4],"high1":[72.9,0.9],"pgd1":[38.2,1.5],"worst":[0,0,0,0,0]},
+"short:reverse":{"clean":[84.4,0.2],"seen_mean":[78.1,0.1],"unseen_mean":[71.3,0.8],"noise":[55.0,2.4],"contrast":[74.1,0.4],"bias2":[10.5,1.0],"high1":[75.0,0.5],"pgd1":[26.7,1.2],"worst":[0,0,0,0,0.62]},
+"short:staircase":{"clean":[90.7,0.2],"seen_mean":[75.8,0.7],"unseen_mean":[78.7,0.0],"noise":[68.3,0.4],"contrast":[68.8,0.4],"bias2":[18.8,0.7],"high1":[65.7,1.2],"pgd1":[55.0,0.5],"worst":[0.62,0,0,0,0]},
+"short:staircase_f025":{"clean":[92.0,0.1],"seen_mean":[71.0,0.9],"unseen_mean":[74.8,0.4],"noise":[58.9,1.1],"contrast":[71.9,0.1],"bias2":[9.6,0.3],"high1":[76.9,0.6],"pgd1":[41.0,0.8],"worst":[0.31,0,0,0,0]},
+"short:staircase_f075":{"clean":[88.5,0.1],"seen_mean":[78.9,0.1],"unseen_mean":[80.3,0.2],"noise":[75.0,0.2],"contrast":[64.5,0.8],"bias2":[33.2,0.8],"high1":[50.8,3.8],"pgd1":[56.1,0.7],"worst":[0.94,0,0,0,0]},
+"short:shuffled":{"clean":[84.2,0.3],"seen_mean":[79.7,0.2],"unseen_mean":[78.5,0.1],"noise":[75.4,0.2],"contrast":[63.7,0.5],"bias2":[59.7,0.1],"high1":[35.7,0.9],"pgd1":[51.2,0.1],"worst":[0.43,0.45,0.45,0.43,0.46]},
+"short:teacher_pg":{"clean":[84.8,0.3],"seen_mean":[80.1,0.2],"unseen_mean":[78.8,0.2],"noise":[74.8,0.3],"contrast":[64.1,0.3],"bias2":[54.2,2.4],"high1":[39.7,1.5],"pgd1":[49.3,0.9],"worst":[0.05,0.2,0.71,0.74,0.53]},
+"short:teacher_spg":{"clean":[87.0,0.1],"seen_mean":[81.0,0.2],"unseen_mean":[80.3,0.1],"noise":[75.4,0.3],"contrast":[66.3,0.9],"bias2":[39.0,0.8],"high1":[52.9,1.0],"pgd1":[54.0,0.1],"worst":[0.05,0.11,0.38,0.61,0.65]},
+"short:teacher_rpg":{"clean":[90.0,0.2],"seen_mean":[81.1,0.4],"unseen_mean":[82.4,0.1],"noise":[76.3,0.6],"contrast":[70.5,0.6],"bias2":[17.6,1.9],"high1":[66.4,1.9],"pgd1":[58.0,0.9],"worst":[0.03,0.01,0.01,0.01,0.02]},
+"short:teacher_pg_eta0.003":{"clean":[86.6,0.0],"seen_mean":[81.1,0.1],"unseen_mean":[80.2,0.2],"noise":[75.5,0.5],"contrast":[66.1,0.5],"bias2":[44.2,1.0],"high1":[49.2,1.5],"pgd1":[53.3,1.3],"worst":[0.05,0.11,0.27,0.45,0.45]},
+"short:teacher_pg_eta0.03":{"clean":[84.6,0.3],"seen_mean":[79.9,0.2],"unseen_mean":[78.8,0.2],"noise":[75.5,0.3],"contrast":[64.1,0.7],"bias2":[55.7,1.8],"high1":[38.4,3.6],"pgd1":[51.3,0.4],"worst":[0.06,0.6,0.82,0.65,0.17]},
+"short:teacher_pg_noiw":{"clean":[88.8,0.1],"seen_mean":[81.6,0.2],"unseen_mean":[81.7,0.0],"noise":[75.9,0.1],"contrast":[68.8,0.4],"bias2":[28.4,0.2],"high1":[61.6,1.5],"pgd1":[59.7,0.8],"worst":[0.06,0.07,0.1,0.13,0.14]},
+"short:teacher_alp":{"clean":[89.0,0.5],"seen_mean":[82.1,0.1],"unseen_mean":[82.0,0.4],"noise":[76.4,0.8],"contrast":[67.7,0.8],"bias2":[29.9,0.5],"high1":[61.3,1.5],"pgd1":[56.6,1.1],"worst":[0.03,0.03,0.02,0.05,0.07]},
+"short:teacher_pg_gn":{"clean":[79.0,0.3],"seen_mean":[78.3,0.3],"unseen_mean":[74.6,0.3],"noise":[72.3,0.4],"contrast":[79.4,0.3],"bias2":[59.3,0.8],"high1":[60.7,1.2],"pgd1":[43.2,0.6],"worst":[0.07,0.09,0.24,0.48,0.5]},
+"full:sharp":{"clean":[94.8,0.0],"seen_mean":[73.5,0.9],"unseen_mean":[75.0,0.5],"noise":[54.3,1.3],"contrast":[76.1,0.3],"bias2":[4.7,0.2],"high1":[85.0,0.2],"pgd1":[44.9,0.2],"worst":[0,0,0,0,0]},
+"full:staircase":{"clean":[93.1,0.2],"seen_mean":[77.0,0.8],"unseen_mean":[78.8,0.6],"noise":[64.0,1.6],"contrast":[71.5,0.2],"bias2":[12.2,0.5],"high1":[75.7,0.4],"pgd1":[57.8,0.1],"worst":[0.62,0,0,0,0]},
+"full:reverse":{"clean":[86.0,0.2],"seen_mean":[80.9,0.3],"unseen_mean":[71.9,0.7],"noise":[52.1,2.1],"contrast":[74.4,0.4],"bias2":[10.9,0.3],"high1":[74.9,1.5],"pgd1":[18.6,2.0],"worst":[0,0,0,0,0.62]},
+"full:random":{"clean":[92.2,0.0],"seen_mean":[85.3,0.2],"unseen_mean":[84.4,0.1],"noise":[76.7,0.2],"contrast":[72.9,0.7],"bias2":[23.5,0.2],"high1":[65.9,1.1],"pgd1":[56.6,0.5],"worst":[0.07,0.07,0.06,0.07,0.07]},
+"full:shuffled":{"clean":[85.4,0.1],"seen_mean":[80.9,0.1],"unseen_mean":[79.5,0.1],"noise":[76.7,0.4],"contrast":[63.1,0.9],"bias2":[68.7,0.8],"high1":[27.6,4.8],"pgd1":[49.3,1.2],"worst":[0.56,0.58,0.57,0.56,0.57]},
+"full:teacher_pg":{"clean":[86.2,0.1],"seen_mean":[81.5,0.2],"unseen_mean":[79.7,0.1],"noise":[76.1,0.6],"contrast":[63.6,0.4],"bias2":[66.6,0.4],"high1":[26.9,0.1],"pgd1":[48.5,0.6],"worst":[0.32,0.83,0.79,0.64,0.26]},
+"full:teacher_spg":{"clean":[87.1,0.2],"seen_mean":[82.5,0.3],"unseen_mean":[80.7,0.1],"noise":[76.7,0.3],"contrast":[65.8,0.8],"bias2":[61.2,0.5],"high1":[34.4,1.2],"pgd1":[46.9,1.0],"worst":[0.03,0.06,0.35,0.62,0.64]}};
+const GROUP={sharp:"base",sharp_gn:"base",shuffled:"base",random:"rand",random_blur:"rand",random_contrast:"rand",random_image:"rand",random_gn:"rand",staircase:"hand",staircase_f025:"hand",staircase_f075:"hand",reverse:"hand"};
+const grp=n=>GROUP[n]||"teach";
 const css=getComputedStyle(document.documentElement), tok=n=>css.getPropertyValue(n).trim();
-const mean=a=>a.reduce((s,x)=>s+x,0)/a.length, sd=a=>{const m=mean(a);return Math.sqrt(mean(a.map(x=>(x-m)**2)))};
-const pct=v=>(v*100).toFixed(1);
-function canvas(el,w,h){const c=document.getElementById(el);c.width=w*2;c.height=h*2;c.style.width=w+"px";c.style.maxWidth="none";const g=c.getContext("2d");g.scale(2,2);return g}
+const COL={base:"--fg",teach:"--accent2",rand:"--accent",hand:"--accent3"};
+function canvas(el,w,h){const c=document.getElementById(el);c.width=w*2;c.height=h*2;c.style.width=w+"px";c.style.maxWidth="none";const g=c.getContext("2d");g.scale(2,2);g.font="11px 'IBM Plex Mono',monospace";return [g,c]}
+const short=Object.keys(D).filter(k=>k.startsWith("short:")).map(k=>k.slice(6));
+const S=n=>D["short:"+n];
+
+// scatter: clean vs mean C
+(function(){
+  const w=640,h=380,l=46,b=34,t=10,r=12,x0=78,x1=95,y0=70,y1=85,X=v=>l+(v-x0)/(x1-x0)*(w-l-r),Y=v=>t+(1-(v-y0)/(y1-y0))*(h-t-b);
+  const [g,c]=canvas("scatter",w,h); const mu=tok("--muted"),ln=tok("--line");
+  g.textBaseline="middle";
+  for(let v=x0;v<=x1;v+=2){g.strokeStyle=ln;g.beginPath();g.moveTo(X(v),t);g.lineTo(X(v),h-b);g.stroke();g.fillStyle=mu;g.textAlign="center";g.fillText(v,X(v),h-b+14)}
+  for(let v=y0;v<=y1;v+=5){g.strokeStyle=ln;g.beginPath();g.moveTo(l,Y(v));g.lineTo(w-r,Y(v));g.stroke();g.fillStyle=mu;g.textAlign="right";g.fillText(v,l-6,Y(v))}
+  g.textAlign="center";g.fillText("clean accuracy %",l+(w-l-r)/2,h-6);
+  const pts=short.map(n=>{const d=S(n);return {n,x:X(d.clean[0]),y:Y((d.seen_mean[0]+d.unseen_mean[0])/2)}});
+  const label=new Set(["sharp","random","random_image","teacher_pg","teacher_rpg","teacher_alp","shuffled","staircase","reverse","random_contrast","staircase_f075"]);
+  pts.forEach(p=>{g.fillStyle=tok(COL[grp(p.n)]);g.beginPath();g.arc(p.x,p.y,5,0,7);g.fill();if(label.has(p.n)){g.fillStyle=mu;g.textAlign="left";g.fillText(p.n,p.x+8,p.y)}});
+  c.addEventListener("mousemove",e=>{const rc=c.getBoundingClientRect(),mx=e.clientX-rc.left,my=e.clientY-rc.top;const hit=pts.find(p=>Math.hypot(p.x-mx,p.y-my)<8);c.title=hit?`${hit.n}: clean ${S(hit.n).clean[0]}, C ${((S(hit.n).seen_mean[0]+S(hit.n).unseen_mean[0])/2).toFixed(1)}`:""});
+})();
+
+// worst-arm share by fifth
+(function(){
+  const names=["teacher_pg","teacher_spg","teacher_pg_eta0.003","teacher_pg_eta0.03","teacher_pg_noiw","teacher_rpg","teacher_alp","teacher_pg_gn"];
+  const cols=["--accent2","--accent","--warn","--bad","--accent3","--good","--fg","--muted"];
+  const w=600,h=240,l=34,b=24,t=8,r=10,X=i=>l+i/4*(w-l-r),Y=v=>t+(1-v)*(h-t-b);
+  const [g]=canvas("worst",w,h); const mu=tok("--muted"),ln=tok("--line");
+  g.textBaseline="middle";
+  [0,.25,.5,.75,1].forEach(v=>{g.strokeStyle=ln;g.beginPath();g.moveTo(l,Y(v));g.lineTo(w-r,Y(v));g.stroke();g.fillStyle=mu;g.textAlign="right";g.fillText(v,l-6,Y(v))});
+  g.textAlign="center";["1st","2nd","3rd","4th","5th fifth"].forEach((s,i)=>{g.fillStyle=mu;g.fillText(s,X(i),h-8)});
+  names.forEach((n,k)=>{g.strokeStyle=tok(cols[k]);g.lineWidth=2;g.beginPath();S(n).worst.forEach((v,i)=>i?g.lineTo(X(i),Y(v)):g.moveTo(X(i),Y(v)));g.stroke()});
+  document.getElementById("worstLegend").innerHTML=names.map((n,k)=>`<span><i class="sw" style="background:var(${cols[k]})"></i>${n.replace("teacher_","")}</span>`).join("");
+})();
+
+// bars: shape bias + PGD
+(function(){
+  const names=[...short].sort((a,b)=>S(a).bias2[0]-S(b).bias2[0]);
+  const w=660,rowh=20,t=6,l=150,r=10,h=t+names.length*rowh+26,X=v=>l+v/100*(w-l-r);
+  const [g]=canvas("bars",w,h); const mu=tok("--muted"),ln=tok("--line");
+  g.textBaseline="middle";
+  [0,25,50,75,100].forEach(v=>{g.strokeStyle=ln;g.beginPath();g.moveTo(X(v),t);g.lineTo(X(v),t+names.length*rowh);g.stroke();g.fillStyle=mu;g.textAlign="center";g.fillText(v+"%",X(v),h-10)});
+  names.forEach((n,i)=>{const y=t+i*rowh+rowh/2,d=S(n);g.fillStyle=mu;g.textAlign="right";g.fillText(n,l-8,y);
+    g.fillStyle=tok("--accent");g.globalAlpha=.75;g.fillRect(X(0),y-6,X(d.bias2[0])-X(0),12);g.globalAlpha=1;
+    g.fillStyle=tok("--accent2");g.beginPath();g.arc(X(d.pgd1[0]),y,4.5,0,7);g.fill()});
+})();
 
 // table
-const keys=["clean","seen","unseen"], names=Object.keys(R);
-const best=Object.fromEntries(keys.map(k=>[k,Math.max(...names.map(n=>mean(R[n][k])))]));
-document.getElementById("tbl").innerHTML="<tr><th>Condition</th><th>Clean</th><th>C seen</th><th>C unseen</th></tr>"+
- names.map(n=>`<tr><td class="mono">${n}</td>${keys.map(k=>`<td class="${mean(R[n][k])===best[k]?"best":""}">${pct(mean(R[n][k]))} ± ${pct(sd(R[n][k]))}</td>`).join("")}</tr>`).join("");
-
-// dot chart: rows = conditions, x = accuracy 60..95
 (function(){
-  const lx=110,w=560,rh=30,top=10,bot=26,H0=top+names.length*rh+bot,x0=60,x1=95,X=v=>lx+(v*100-x0)/(x1-x0)*(w-lx-10);
-  const g=canvas("dots",w,H0); const mu=tok("--muted"), ln=tok("--line");
-  g.font="11px 'IBM Plex Mono',monospace";
-  for(let t=60;t<=95;t+=5){g.strokeStyle=ln;g.beginPath();g.moveTo(X(t/100),top);g.lineTo(X(t/100),top+names.length*rh);g.stroke();g.fillStyle=mu;g.textAlign="center";g.fillText(t+"%",X(t/100),H0-8)}
-  const col={clean:tok("--fg"),seen:tok("--accent"),unseen:tok("--accent2")};
-  names.forEach((n,i)=>{const y=top+i*rh+rh/2;g.fillStyle=mu;g.textAlign="left";g.textBaseline="middle";g.fillText(n,0,y);
-    keys.forEach(k=>{const a=R[n][k];g.strokeStyle=col[k];g.lineWidth=2;g.beginPath();g.moveTo(X(Math.min(...a)),y);g.lineTo(X(Math.max(...a)),y);g.stroke();
-      g.fillStyle=col[k];g.beginPath();g.arc(X(mean(a)),y,4.5,0,7);g.fill()})});
+  const cols=[["clean","Clean"],["seen_mean","C seen"],["unseen_mean","C unseen"],["noise","Noise"],["contrast","Contrast"],["bias2","Bias σ2"],["pgd1","PGD 1/255"]];
+  const groups=[["short","30 epochs: original 7",["sharp","staircase","reverse","random","shuffled","teacher_pg","teacher_spg"]],
+    ["short","30 epochs: teacher variants (A)",["teacher_rpg","teacher_pg_eta0.003","teacher_pg_eta0.03","teacher_pg_noiw","teacher_alp"]],
+    ["short","30 epochs: training regime (B)",["random_image","random_blur","random_contrast","sharp_gn","random_gn","teacher_pg_gn","staircase_f025","staircase_f075"]],
+    ["full","100 epochs",["sharp","staircase","reverse","random","shuffled","teacher_pg","teacher_spg"]]];
+  let html="<tr><th>Condition</th>"+cols.map(c=>`<th>${c[1]}</th>`).join("")+"<th>Worst late</th></tr>";
+  for(const [b,title,names] of groups){
+    const best=Object.fromEntries(cols.map(([k])=>[k,Math.max(...names.map(n=>D[b+":"+n][k][0]))]));
+    html+=`<tr class="grp"><td colspan="9">${title}</td></tr>`;
+    html+=names.map(n=>{const d=D[b+":"+n];return `<tr><td class="mono">${n}</td>${cols.map(([k])=>`<td class="${d[k][0]===best[k]&&k!=="bias2"?"best":""}">${d[k][0].toFixed(1)} ± ${d[k][1].toFixed(1)}</td>`).join("")}<td>${d.worst[4].toFixed(2)}</td></tr>`}).join("");
+  }
+  document.getElementById("tbl").innerHTML=html;
 })();
-
-// worst-arm share line chart
-(function(){
-  const lx=34,w=600,h=220,top=8,bot=24,X=e=>lx+e/29*(w-lx-8),Y=v=>top+(1-v)*(h-top-bot);
-  const g=canvas("worst",w,h); const mu=tok("--muted"), ln=tok("--line");
-  g.font="11px 'IBM Plex Mono',monospace";g.textBaseline="middle";
-  [0,.25,.5,.75,1].forEach(v=>{g.strokeStyle=ln;g.beginPath();g.moveTo(lx,Y(v));g.lineTo(w-8,Y(v));g.stroke();g.fillStyle=mu;g.textAlign="right";g.fillText(v,lx-6,Y(v))});
-  g.setLineDash([3,3]);g.strokeStyle=mu;g.beginPath();g.moveTo(lx,Y(1/16));g.lineTo(w-8,Y(1/16));g.stroke();g.setLineDash([]);
-  g.textAlign="center";[1,10,20,30].forEach(e=>{g.fillStyle=mu;g.fillText("ep "+e,X(e-1),h-8)});
-  [["teacher_pg","--accent"],["teacher_spg","--accent2"]].forEach(([n,c])=>W[n].forEach(s=>{g.strokeStyle=tok(c);g.lineWidth=1.6;g.beginPath();s.forEach((v,e)=>e?g.lineTo(X(e),Y(v)):g.moveTo(X(e),Y(v)));g.stroke()}));
-})();
-
-// seed-0 heatmaps
-const S=[0,0.75,1.5,3], Cc=[1,0.6,0.35,0.2];
-for(const name of ["teacher_pg","teacher_spg"]){
-  const fig=document.createElement("figure"), cap=document.createElement("figcaption"); cap.textContent=name+" (rows: arms sharp → most degraded; columns: epochs)"; fig.append(cap);
-  const box=document.createElement("div"); box.className="scroll"; const c=document.createElement("canvas"); c.id="h_"+name; box.append(c); fig.append(box); document.getElementById("heat").append(fig);
-  const cw=19,ch=13,lx=78,ty=2,by=20, g=canvas(c.id,lx+30*cw,ty+16*ch+by);
-  g.font="11px 'IBM Plex Mono',monospace"; g.fillStyle=tok("--muted"); g.textBaseline="middle";
-  for(let a=0;a<16;a++) g.fillText(`σ${S[a>>2]}/c${Cc[a&3]}`,0,ty+a*ch+ch/2);
-  H[name].forEach((row,e)=>row.forEach((n,a)=>{g.fillStyle=tok("--heat0");g.fillRect(lx+e*cw,ty+a*ch,cw-1,ch-1);g.globalAlpha=Math.min(1,n/80);g.fillStyle=tok("--heat1");g.fillRect(lx+e*cw,ty+a*ch,cw-1,ch-1);g.globalAlpha=1}));
-  g.fillStyle=tok("--muted"); g.textBaseline="top"; [1,10,20,30].forEach(e=>g.fillText(e,lx+(e-1)*cw+3,ty+16*ch+5));
-}
 </script>
