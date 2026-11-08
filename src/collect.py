@@ -4,9 +4,6 @@ from pathlib import Path
 
 import numpy as np
 
-CONDITIONS = ["sharp", "staircase", "reverse", "random", "shuffled", "teacher_pg", "teacher_spg"]
-
-
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--results", required=True, help="results/<budget> directory")
@@ -14,7 +11,7 @@ def main():
     a = p.parse_args()
     root = Path(a.results)
     out = {}
-    for c in CONDITIONS:
+    for c in sorted(d.name for d in root.iterdir() if d.is_dir()):
         runs = sorted(d for d in (root / c).glob("*") if (d / "eval.json").exists())
         evals = [json.loads((d / "eval.json").read_text()) for d in runs]
         row = {"seeds": [d.name for d in runs]}
@@ -27,6 +24,9 @@ def main():
             arms = np.load(d / "arms.npy")
             spe = len(arms) // a.epochs
             row["arm_hist"].append([np.bincount(arms[e * spe:(e + 1) * spe], minlength=16).tolist() for e in range(a.epochs)])
+        probes = [d / "probe.json" for d in runs if (d / "probe.json").exists()]
+        if probes:
+            row["probe"] = [json.loads(f.read_text()) for f in probes]
         out[c] = row
     print(json.dumps(out, separators=(",", ":")))
 

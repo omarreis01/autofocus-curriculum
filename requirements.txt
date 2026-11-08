@@ -1,6 +1,7 @@
 # torch and torchvision are not listed: use Colab's preinstalled build.
 # Local CPU: uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 numpy
+scikit-learn
 pytest
 datasets
 huggingface_hub

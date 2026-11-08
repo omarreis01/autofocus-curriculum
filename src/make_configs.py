@@ -16,6 +16,20 @@ def condition_configs(budget, seed, results=RESULTS):
         "shuffled": base | {"condition": "shuffled", "arms_path": f"{results}/{budget}/teacher_pg/{seed}/arms.npy"},
         "staircase": base | {"condition": "staircase"},
         "reverse": base | {"condition": "reverse"},
+        # extended experiments (docs/plans/genis-deneyler.md)
+        "teacher_rpg": base | {"condition": "teacher", "signal": "rpg"},
+        "teacher_pg_eta0.003": base | {"condition": "teacher", "signal": "pg", "eta": 0.003},
+        "teacher_pg_eta0.03": base | {"condition": "teacher", "signal": "pg", "eta": 0.03},
+        "teacher_pg_noiw": base | {"condition": "teacher", "signal": "pg", "importance": False},
+        "teacher_alp": base | {"condition": "alp"},
+        "random_image": base | {"condition": "random_image"},
+        "random_blur": base | {"condition": "random_blur"},
+        "random_contrast": base | {"condition": "random_contrast"},
+        "sharp_gn": base | {"condition": "sharp", "norm": "gn"},
+        "random_gn": base | {"condition": "random", "norm": "gn"},
+        "teacher_pg_gn": base | {"condition": "teacher", "signal": "pg", "norm": "gn"},
+        "staircase_f025": base | {"condition": "staircase", "staircase_frac": 0.25},
+        "staircase_f075": base | {"condition": "staircase", "staircase_frac": 0.75},
     }
 
 

@@ -26,11 +26,15 @@ def crash_at(schedule, step):
     return schedule
 
 
-@pytest.mark.parametrize("condition", ["fixed", "teacher_pg", "teacher_spg"])
+@pytest.mark.parametrize("condition", ["fixed", "fixed_gn", "teacher_pg", "teacher_spg", "teacher_rpg", "alp"])
 def test_resume_after_crash_matches_uninterrupted_run(tmp_path, condition):
     cfg = load_config(None) | {"epochs": 4, "batch_size": 8, "ckpt_every": 2, "lr": 0.05}
     if condition.startswith("teacher"):
         cfg |= {"condition": "teacher", "signal": condition[8:], "eta": 0.5}  # large eta: the policy moves
+    elif condition == "alp":
+        cfg |= {"condition": "alp", "fit_rate": 3}  # refits at steps 3 and 6: resume restores a fitted GMM
+    elif condition == "fixed_gn":
+        cfg |= {"condition": "fixed", "arm": 5, "norm": "gn"}
     else:
         cfg |= {"condition": condition, "arm": 5}
     data = fake_cifar10(16, 16, torch.device("cpu"))  # 2 steps per epoch
@@ -47,9 +51,11 @@ def test_resume_after_crash_matches_uninterrupted_run(tmp_path, condition):
     for k, v in ref.state_dict().items():
         torch.testing.assert_close(resumed.state_dict()[k], v, rtol=0, atol=0, msg=k)
     np.testing.assert_array_equal(np.load(run / "arms.npy"), np.load(tmp_path / "ref" / "arms.npy"))
-    if condition.startswith("teacher"):
+    if not condition.startswith("fixed"):
         a, b = np.load(run / "teacher.npz"), np.load(tmp_path / "ref" / "teacher.npz")
-        for k in ("rewards", "probs"):
+        for k in a.files:
             np.testing.assert_array_equal(a[k], b[k])
+    has_bn = any(isinstance(m, torch.nn.modules.batchnorm._BatchNorm) for m in resumed.modules())
+    assert has_bn == (cfg["norm"] == "bn")
     rows = [json.loads(r)["epoch"] for r in (run / "metrics.jsonl").read_text().splitlines()]
     assert rows == [1, 2, 3, 4]

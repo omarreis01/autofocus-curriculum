@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 import torch
 
@@ -60,3 +61,15 @@ def test_augment_returns_padded_crop_or_its_mirror():
         assert any(torch.equal(out[i], c.flip(-1)) for c in crops), i
         flips += 1
     assert 0 < flips < len(x)
+
+
+def test_per_image_degradation_matches_degrading_each_image_with_its_own_arm():
+    from src.train import prepare, prepare_per_image
+
+    arms = arm_grid()
+    x = torch.randint(0, 256, (24, 3, 32, 32), dtype=torch.uint8, generator=torch.Generator().manual_seed(0))
+    ids = np.random.default_rng(0).integers(0, len(arms), len(x))
+    out = prepare_per_image(x, arms, ids)
+    for i, a in enumerate(ids):
+        torch.testing.assert_close(out[i : i + 1], prepare(x[i : i + 1], *arms[a]), msg=str(i))
+    assert torch.equal(prepare_per_image(x, arms, np.full(len(x), 13)), prepare(x, *arms[13]))

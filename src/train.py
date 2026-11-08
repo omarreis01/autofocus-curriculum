@@ -18,6 +18,7 @@ from .schedule import make_schedule
 DEFAULTS = {
     "condition": "sharp",
     "arm": None,
+    "norm": "bn",  # "gn": GroupNorm(32), no batch statistics
     "seed": 0,
     "epochs": 30,
     "batch_size": 512,
@@ -70,6 +71,20 @@ def prepare(x_uint8, sigma, c):
     return x
 
 
+def prepare_per_image(x_uint8, arms, ids):
+    # One degrade call per arm present in the batch; blur and contrast act on each image alone.
+    x = to_float(x_uint8)
+    out = torch.empty_like(x)
+    ids_dev = torch.from_numpy(np.asarray(ids)).to(x.device)
+    for a in np.unique(ids).tolist():
+        m = ids_dev == a
+        out[m] = degrade(x[m], *arms[a])
+    x = normalize(out)
+    if x.is_cuda:
+        x = x.contiguous(memory_format=torch.channels_last)
+    return x
+
+
 @torch.no_grad()
 def measure_loss(net, model, x, y, dtype):
     # Train-mode forward (batch statistics, like the training loss) that leaves BN running stats untouched.
@@ -105,8 +120,8 @@ def train_step(net, opt, scaler, x, y, dtype):
     return loss.detach().float()
 
 
-def build_model(device):
-    model = ResNet18().to(device)
+def build_model(device, norm="bn"):
+    model = ResNet18(norm=norm).to(device)
     if device.type == "cuda":
         model = model.to(memory_format=torch.channels_last)
     return model
@@ -124,7 +139,7 @@ def train(cfg, data, schedule, out_dir, resume=False, compile=False):
     device = data["x_train"].device
     torch.manual_seed(cfg["seed"])
     arms = arm_grid(cfg["sigmas"], cfg["contrasts"])
-    model = build_model(device)
+    model = build_model(device, cfg["norm"])
     opt = torch.optim.SGD(model.parameters(), lr=0.0, momentum=0.9, nesterov=True, weight_decay=cfg["weight_decay"])
     dtype = amp_dtype(device)
     scaler = torch.amp.GradScaler("cuda", enabled=dtype == torch.float16)
@@ -169,7 +184,8 @@ def train(cfg, data, schedule, out_dir, resume=False, compile=False):
             idx = perm[i * bs : (i + 1) * bs]
             arm = schedule.next_arm(step)
             arm_log[step] = arm
-            x = prepare(augment(data["x_train"][idx], g), *arms[arm])
+            x = augment(data["x_train"][idx], g)
+            x = prepare_per_image(x, arms, schedule.image_arms(step)) if schedule.per_image else prepare(x, *arms[arm])
             y = data["y_train"][idx]
             for group in opt.param_groups:
                 group["lr"] = lr_at(step, total, cfg["lr"], cfg["warmup_frac"])

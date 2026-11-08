@@ -23,8 +23,9 @@ class RewardScaler:
 
 class Exp3S:
     # Graves 2017 Eq. 1 with beta = 0; log-weights keep it stable over long runs.
-    def __init__(self, n_arms, eta, eps, alpha, seed):
+    def __init__(self, n_arms, eta, eps, alpha, seed, importance=True):
         self.w = np.zeros(n_arms)
+        self.importance = importance
         self.eta, self.eps, self.alpha = eta, eps, alpha
         self.t = 0
         self.rng = np.random.default_rng(seed)
@@ -41,20 +42,21 @@ class Exp3S:
         n = len(self.w)
         alpha = 1 / self.t if self.alpha is None else self.alpha
         v = self.w.copy()
-        v[arm] += self.eta * r / self.probs()[arm]
+        v[arm] += self.eta * r / (self.probs()[arm] if self.importance else 1.0)
         e = np.exp(v - v.max())
         w = np.log((1 - alpha) * e + alpha / (n - 1) * (e.sum() - e))
         self.w = w - w.max()
 
 
 class Teacher(Schedule):
-    def __init__(self, n_arms, total, signal="pg", eta=0.01, eps=0.05, alpha=None, reward_window=1000, seed=0):
-        if signal not in ("pg", "spg"):
+    def __init__(self, n_arms, total, signal="pg", eta=0.01, eps=0.05, alpha=None, reward_window=1000, seed=0,
+                 importance=True):
+        if signal not in ("pg", "spg", "rpg", "rspg"):
             raise ValueError(f"unknown signal: {signal}")
         self.signal = signal
-        self.wants_loss_after = signal == "pg"
-        self.wants_fresh_batch = signal == "spg"
-        self.bandit = Exp3S(n_arms, eta, eps, alpha, seed)
+        self.wants_loss_after = signal in ("pg", "rpg")
+        self.wants_fresh_batch = signal in ("spg", "rspg")
+        self.bandit = Exp3S(n_arms, eta, eps, alpha, seed, importance)
         self.scaler = RewardScaler(reward_window)
         self.rewards = np.zeros(total, dtype=np.float32)
         self.probs = np.zeros((total, n_arms), dtype=np.float32)
@@ -64,10 +66,14 @@ class Teacher(Schedule):
         return self.bandit.sample()
 
     def update(self, arm, info):
-        if self.signal == "pg":
-            raw = (info["loss"] - info["loss_after"]).item()  # the only per-step GPU sync
+        if self.wants_loss_after:
+            before, after = info["loss"], info["loss_after"]
         else:
-            raw = (info["fresh_before"] - info["fresh_after"]).item()
+            before, after = info["fresh_before"], info["fresh_after"]
+        gain = before - after
+        if self.signal in ("rpg", "rspg"):  # relative progress: removes the loss-level scale of raw PG
+            gain = gain / before
+        raw = gain.item()  # the only per-step GPU sync
         self.rewards[info["step"]] = raw
         self.bandit.update(arm, self.scaler(raw))
 

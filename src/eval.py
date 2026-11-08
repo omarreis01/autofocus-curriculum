@@ -57,8 +57,9 @@ def main():
     p.add_argument("--no-recal", action="store_true", help="keep the BN running stats from training")
     a = p.parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = build_model(device)
-    model.load_state_dict(torch.load(a.ckpt, map_location=device, weights_only=False)["model"])
+    ck = torch.load(a.ckpt, map_location=device, weights_only=False)
+    model = build_model(device, ck["cfg"].get("norm", "bn"))
+    model.load_state_dict(ck["model"])
     t0 = time.time()
     data = load_cifar10(a.data_dir, device)
     if not a.no_recal:

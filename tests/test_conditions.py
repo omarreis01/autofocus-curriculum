@@ -41,3 +41,19 @@ def test_shuffled_replays_teacher_arm_counts_in_new_order(tmp_path):
     shuffled = arm_sequence("shuffled", total, tmp_path)
     np.testing.assert_array_equal(np.bincount(shuffled, minlength=16), np.bincount(src, minlength=16))
     assert (shuffled != src).mean() > 0.5
+
+
+@pytest.mark.parametrize("name, on_axis", [("random_blur", lambda s, c: c == 1.0), ("random_contrast", lambda s, c: s == 0.0)])
+def test_axis_ablation_draws_every_arm_of_its_axis_and_nothing_else(name, on_axis):
+    s = make_schedule(load_config(None) | {"condition": name}, ARMS, 2910)
+    used = {s.next_arm(t) for t in range(2910)}
+    assert used == {i for i, (sig, c) in enumerate(ARMS) if on_axis(sig, c)}
+
+
+def test_random_image_mixes_arms_within_a_batch_and_is_seeded():
+    cfg = load_config(None) | {"condition": "random_image", "batch_size": 512}
+    a, b = make_schedule(cfg, ARMS, 100), make_schedule(cfg, ARMS, 100)
+    batch = a.image_arms(7)
+    assert len(batch) == 512 and set(batch) == set(range(len(ARMS)))
+    np.testing.assert_array_equal(batch, b.image_arms(7))
+    assert a.next_arm(7) == batch[0] and not np.array_equal(batch, a.image_arms(8))

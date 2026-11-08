@@ -10,6 +10,8 @@ class Schedule:
     # When True, the trainer draws a fresh batch from the chosen arm and adds its loss before and
     # after the update as reward_info["fresh_before"] / ["fresh_after"] (SPG reward).
     wants_fresh_batch = False
+    # When True, the trainer degrades each image with its own arm from image_arms(step).
+    per_image = False
 
     def next_arm(self, step):
         raise NotImplementedError
@@ -49,6 +51,21 @@ class Sequence(Schedule):
         return int(self.seq[step])
 
 
+class PerImageRandom(Schedule):
+    # Uniform random arm per image, a pure function of (seed, step) so resume needs nothing.
+    # next_arm (the logged arm) is the first image's arm: a uniform sample of the batch's arms.
+    per_image = True
+
+    def __init__(self, n_arms, batch_size, seed):
+        self.n_arms, self.batch_size, self.seed = n_arms, batch_size, seed
+
+    def image_arms(self, step):
+        return np.random.default_rng([self.seed, step]).integers(0, self.n_arms, self.batch_size)
+
+    def next_arm(self, step):
+        return int(self.image_arms(step)[0])
+
+
 def staircase(n_sigma, n_contrast, total, frac):
     # Diagonal of the grid from most degraded to sharp, 4 equal stages over the first frac of steps.
     diag = [i * n_contrast + min(i, n_contrast - 1) for i in reversed(range(n_sigma))]
@@ -68,6 +85,11 @@ def make_schedule(cfg, arms, total):
         return FixedArm(cfg["arm"])
     if c == "random":
         return Sequence(np.random.default_rng(seed).integers(0, len(arms), total))
+    if c == "random_image":
+        return PerImageRandom(len(arms), cfg["batch_size"], seed)
+    if c in ("random_blur", "random_contrast"):
+        axis = [i for i, (s, k) in enumerate(arms) if (k == 1.0 if c == "random_blur" else s == 0.0)]
+        return Sequence(np.random.default_rng(seed).choice(axis, total))
     if c == "staircase":
         return Sequence(staircase(n_s, n_c, total, cfg["staircase_frac"]))
     if c == "reverse":
@@ -81,5 +103,10 @@ def make_schedule(cfg, arms, total):
         from .teacher import Teacher
 
         return Teacher(len(arms), total, cfg["signal"], cfg["eta"], cfg["eps"], cfg["alpha"],
-                       cfg["reward_window"], seed)
+                       cfg["reward_window"], seed, cfg.get("importance", True))
+    if c == "alp":
+        from .teacher_alp import AlpGmm
+
+        return AlpGmm(cfg["sigmas"], cfg["contrasts"], total, cfg.get("p_rnd", 0.2), cfg.get("fit_rate", 250),
+                      cfg.get("k_max", 10), seed)
     raise ValueError(f"unknown condition: {c}")
