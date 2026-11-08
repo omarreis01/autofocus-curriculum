@@ -19,10 +19,10 @@ def digest(r):
     row["contrast"] = ms(cm["contrast"])
     probes = r.get("probe", [])
     if probes:
-        for s in ("1", "2", "3"):
-            row[f"bias{s}"] = ms([p["hybrid"][s]["bias"] for p in probes])
-        row["low2"] = ms([p["lowpass"]["2"] for p in probes])
-        row["high1"] = ms([p["highpass"]["1"] for p in probes])
+        for s in ("1.0", "2.0", "3.0"):
+            row[f"bias{s[0]}"] = ms([p["hybrid"][s]["bias"] for p in probes])
+        row["low2"] = ms([p["lowpass"]["2.0"] for p in probes])
+        row["high1"] = ms([p["highpass"]["1.0"] for p in probes])
         row["fgsm2"] = ms([p["fgsm"]["2/255"] for p in probes])
         row["pgd1"] = ms([p["pgd10"]["1/255"] for p in probes])
         row["pgd2"] = ms([p["pgd10"]["2/255"] for p in probes])
