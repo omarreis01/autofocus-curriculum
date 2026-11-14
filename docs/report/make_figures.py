@@ -99,6 +99,26 @@ def curves(cv, budget, groups, out):
     plt.close(fig)
 
 
+def curves_rows(cv, rows, out):
+    """Compact report: one row per (title, budget, names); fixed orders are drawn once (30 epochs)."""
+    fig, axes = plt.subplots(len(rows), 2, figsize=(6.5, 1.85 * len(rows)))
+    for row, (title, budget, names) in enumerate(rows):
+        for col, (key, ylab, ref, ylim) in enumerate([("s", r"mean blur $\sigma$ (px)", UNIFORM_SIGMA, (-0.1, 3.15)),
+                                                      ("c", "mean contrast $c$", UNIFORM_C, (0.15, 1.05))]):
+            ax = axes[row, col]
+            ax.axhline(ref, color="#999999", ls=":", lw=1)
+            for n in names:
+                line(ax, cv[budget][n][key], n, lw=2.2 if n in ("random", "teacher_pg") else 1.5)
+            ax.set_ylim(*ylim)
+            ax.set_ylabel(ylab)
+            ax.set_title(f"{title}: {'blur' if key == 's' else 'contrast'}")
+            ax.set_xlabel("epoch")
+        axes[row, 1].legend(loc="center left", bbox_to_anchor=(1.02, 0.5), frameon=False)
+    fig.tight_layout()
+    fig.savefig(FIG / out)
+    plt.close(fig)
+
+
 LABEL_POS = {  # (dx, dy, ha) so labels in the 85-87 % cluster do not overlap
     ("seen_mean", "reverse"): (-0.4, 0.15, "right"), ("seen_mean", "shuffled"): (-0.4, -0.45, "right"),
     ("seen_mean", "teacher_pg"): (0.4, -0.5, "left"), ("seen_mean", "teacher_spg"): (0.4, 0.25, "left"),
@@ -151,8 +171,8 @@ def worst_share(D, out):
     plt.close(fig)
 
 
-def shape_bias(D, out):
-    fig, ax = plt.subplots(figsize=(6.3, 2.6))
+def shape_bias(D, out, height=2.6):
+    fig, ax = plt.subplots(figsize=(6.3, height))
     w = 0.38
     for i, n in enumerate(MAIN7):
         for j, (b, alpha) in enumerate([("short", 0.55), ("full", 1.0)]):
@@ -242,6 +262,15 @@ def tables(D):
     table(D, [("full", n, False) for n in MAIN7], c_all, "full100.tex")
 
 
+def compact_figures(D, CV):
+    shape_bias(D, "shape_bias_compact.pdf", height=2.0)
+    curves_rows(CV, [("Orders, 30 ep", "short", ["sharp", "staircase", "reverse", "random"]),
+                     ("Teachers, 30 ep", "short", ["teacher_pg", "teacher_spg", "teacher_rpg", "teacher_alp",
+                                                   "shuffled"]),
+                     ("Teachers, 100 ep", "full", ["teacher_pg", "teacher_spg", "shuffled"])],
+                "curves_compact.pdf")
+
+
 def main():
     FIG.mkdir(exist_ok=True)
     TAB.mkdir(exist_ok=True)
@@ -252,6 +281,7 @@ def main():
            "curves_30ep.pdf")
     curves(CV, "full", [("Orders", ["sharp", "staircase", "reverse", "random"]),
                         ("Teachers", ["teacher_pg", "teacher_spg", "shuffled"])], "curves_100ep.pdf")
+    compact_figures(D, CV)
     main_scatter(D, "main_100ep.pdf")
     worst_share(D, "worst_share.pdf")
     shape_bias(D, "shape_bias.pdf")
