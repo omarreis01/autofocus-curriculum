@@ -1,0 +1,119 @@
+% Imitation of the CMPE 492 report template style (original fbe_tez.sty not available)
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{styles/fbe_tez}[2026/11/14 imitation of the CMPE 492 report style]
+
+% Page: A4, text width 155 mm, left 35 mm, right 20 mm; page number top right only.
+\RequirePackage[a4paper,left=35mm,right=20mm,top=35mm,bottom=27mm,
+  headheight=15pt,headsep=10mm,footskip=10mm]{geometry}
+\linespread{1.5}
+\setlength{\parindent}{1cm}
+\setlength{\parskip}{0pt}
+
+\def\ps@plain{\let\@mkboth\@gobbletwo
+  \def\@oddhead{\hfil\normalfont\thepage}\let\@evenhead\@oddhead
+  \def\@oddfoot{}\let\@evenfoot\@oddfoot}
+\def\ps@headings{\ps@plain}
+\pagestyle{plain}
+
+% Title page: centered block, no page number, no date.
+\renewcommand\maketitle{\begin{titlepage}%
+  \null\vfill
+  \begin{center}%
+    {\Large \@title \par}%
+    \vskip 2.5em%
+    {\large \lineskip .75em \begin{tabular}[t]{c}\@author\end{tabular}\par}%
+  \end{center}\par
+  \vfill\null
+  \end{titlepage}%
+  \setcounter{page}{1}}
+
+% Chapter heads: no "Chapter" word, centered, bold, upper case; "APPENDIX A:" in the appendix.
+\newif\if@fbeappendix
+\g@addto@macro\appendix{\global\@fbeappendixtrue}
+\def\fbe@chapnum{\if@fbeappendix APPENDIX \thechapter:\hspace{0.8em}\else\thechapter.\hspace{1em}\fi}
+\def\@makechapterhead#1{%
+  \vspace*{-14pt}%
+  {\centering\normalfont\large\bfseries
+   \ifnum\c@secnumdepth>\m@ne\fbe@chapnum\fi\MakeUppercase{#1}\par}%
+  \vskip 40pt}
+\def\@makeschapterhead#1{%
+  \vspace*{-14pt}%
+  {\centering\normalfont\large\bfseries\MakeUppercase{#1}\par}%
+  \vskip 40pt}
+\def\@chapter[#1]#2{%
+  \ifnum\c@secnumdepth>\m@ne
+    \refstepcounter{chapter}%
+    \if@fbeappendix
+      \addcontentsline{toc}{chapter}{APPENDIX \thechapter:\hspace{0.6em}\MakeUppercase{#1}}%
+    \else
+      \addcontentsline{toc}{chapter}{\protect\numberline{\thechapter}\MakeUppercase{#1}}%
+    \fi
+  \else
+    \addcontentsline{toc}{chapter}{\MakeUppercase{#1}}%
+  \fi
+  \chaptermark{#1}%
+  \addtocontents{lof}{\protect\addvspace{10\p@}}%
+  \addtocontents{lot}{\protect\addvspace{10\p@}}%
+  \@makechapterhead{#2}\@afterindenttrue\@afterheading}
+\def\@schapter#1{\@makeschapterhead{#1}\@afterindenttrue\@afterheading}
+% The first paragraph after any heading is indented, as in the template.
+
+% Sections: "1.1. Title" centered bold; subsections "2.2.1. Title" left bold.
+\def\@seccntformat#1{\csname the#1\endcsname.\hspace{0.5em}}
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+  {3ex \@plus 1ex \@minus .2ex}{2ex \@plus .2ex}%
+  {\centering\normalfont\normalsize\bfseries}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+  {3ex \@plus 1ex \@minus .2ex}{1.5ex \@plus .2ex}%
+  {\normalfont\normalsize\bfseries}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+  {2.5ex \@plus 1ex \@minus .2ex}{1ex \@plus .2ex}%
+  {\normalfont\normalsize\bfseries\itshape}}
+
+% Table of contents: "TABLE OF CONTENTS", numbers end with a dot, chapters not bold.
+\renewcommand\contentsname{TABLE OF CONTENTS}
+\renewcommand\listfigurename{LIST OF FIGURES}
+\renewcommand\listtablename{LIST OF TABLES}
+\renewcommand\bibname{REFERENCES}
+\renewcommand\appendixname{APPENDIX}
+\def\numberline#1{\hb@xt@\@tempdima{#1.\hfil}}
+\renewcommand*\l@chapter{\@dottedtocline{0}{0em}{1.5em}}
+\renewcommand*\l@section{\@dottedtocline{1}{1.5em}{2.3em}}
+\renewcommand*\l@subsection{\@dottedtocline{2}{3.8em}{3.2em}}
+\renewcommand*\l@figure{\@dottedtocline{1}{0em}{3em}}
+\let\l@table\l@figure
+\setcounter{tocdepth}{2}
+
+% Captions: "Figure 9.1. Caption" below figures, "Table 9.1. Caption." above tables.
+\setlength\abovecaptionskip{8pt}
+\setlength\belowcaptionskip{6pt}
+\long\def\@makecaption#1#2{%
+  \vskip\abovecaptionskip
+  \sbox\@tempboxa{#1. #2}%
+  \ifdim\wd\@tempboxa>\hsize
+    {\linespread{1.15}\selectfont #1. #2\par}%
+  \else
+    \global\@minipagefalse
+    \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
+  \fi
+  \vskip\belowcaptionskip}
+
+% References: "REFERENCES" heading (listed in the contents), entries "1. ...".
+\def\@biblabel#1{#1.}
+\renewenvironment{thebibliography}[1]
+  {\chapter*{\bibname}%
+   \addcontentsline{toc}{chapter}{\bibname}%
+   \list{\@biblabel{\@arabic\c@enumiv}}%
+        {\settowidth\labelwidth{\@biblabel{#1}}%
+         \leftmargin\labelwidth \advance\leftmargin\labelsep
+         \itemsep 6pt
+         \@openbib@code
+         \usecounter{enumiv}%
+         \let\p@enumiv\@empty
+         \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+   \sloppy\clubpenalty4000\@clubpenalty\clubpenalty\widowpenalty4000%
+   \sfcode`\.\@m}
+  {\def\@noitemerr{\@latex@warning{Empty `thebibliography' environment}}%
+   \endlist}
+
+\endinput

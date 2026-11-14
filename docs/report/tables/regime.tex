@@ -1,0 +1,22 @@
+\begin{tabular}{lcccccc}
+\hline
+Condition & Clean & C-seen & C-unseen & Noise & C-contr. & PGD \\
+\hline
+\multicolumn{7}{l}{\textit{Per batch vs per image (BatchNorm)}} \\
+\texttt{random} & $89.4{\scriptstyle\,\pm0.2}$ & $81.4{\scriptstyle\,\pm0.3}$ & $82.2{\scriptstyle\,\pm0.1}$ & $76.4{\scriptstyle\,\pm0.1}$ & $69.3{\scriptstyle\,\pm0.8}$ & $59.5{\scriptstyle\,\pm1.0}$ \\
+\texttt{random\_image} & $89.6{\scriptstyle\,\pm0.0}$ & $86.9{\scriptstyle\,\pm0.1}$ & $81.2{\scriptstyle\,\pm0.2}$ & $71.7{\scriptstyle\,\pm0.7}$ & $88.9{\scriptstyle\,\pm0.1}$ & $37.0{\scriptstyle\,\pm1.0}$ \\
+\multicolumn{7}{l}{\textit{One axis only}} \\
+\texttt{random\_blur} & $90.8{\scriptstyle\,\pm0.3}$ & $82.1{\scriptstyle\,\pm0.3}$ & $81.9{\scriptstyle\,\pm0.2}$ & $73.8{\scriptstyle\,\pm0.1}$ & $67.2{\scriptstyle\,\pm0.6}$ & $56.4{\scriptstyle\,\pm0.5}$ \\
+\texttt{random\_contrast} & $92.7{\scriptstyle\,\pm0.2}$ & $68.2{\scriptstyle\,\pm0.3}$ & $73.6{\scriptstyle\,\pm0.3}$ & $57.4{\scriptstyle\,\pm1.1}$ & $76.1{\scriptstyle\,\pm1.0}$ & $31.2{\scriptstyle\,\pm1.2}$ \\
+\multicolumn{7}{l}{\textit{GroupNorm vs BatchNorm}} \\
+\texttt{sharp} & $93.2{\scriptstyle\,\pm0.1}$ & $69.6{\scriptstyle\,\pm0.4}$ & $73.3{\scriptstyle\,\pm0.1}$ & $55.5{\scriptstyle\,\pm0.1}$ & $73.8{\scriptstyle\,\pm0.6}$ & $34.8{\scriptstyle\,\pm0.6}$ \\
+\texttt{sharp\_gn} & $90.2{\scriptstyle\,\pm0.3}$ & $79.6{\scriptstyle\,\pm0.4}$ & $78.8{\scriptstyle\,\pm0.5}$ & $69.4{\scriptstyle\,\pm1.4}$ & $87.6{\scriptstyle\,\pm0.6}$ & $38.2{\scriptstyle\,\pm1.5}$ \\
+\texttt{random\_gn} & $84.7{\scriptstyle\,\pm0.2}$ & $83.0{\scriptstyle\,\pm0.2}$ & $79.7{\scriptstyle\,\pm0.1}$ & $76.2{\scriptstyle\,\pm0.1}$ & $84.8{\scriptstyle\,\pm0.2}$ & $49.4{\scriptstyle\,\pm0.3}$ \\
+\texttt{teacher\_pg} & $84.8{\scriptstyle\,\pm0.3}$ & $80.1{\scriptstyle\,\pm0.2}$ & $78.8{\scriptstyle\,\pm0.2}$ & $74.8{\scriptstyle\,\pm0.3}$ & $64.1{\scriptstyle\,\pm0.3}$ & $49.3{\scriptstyle\,\pm0.9}$ \\
+\texttt{teacher\_pg\_gn} & $79.0{\scriptstyle\,\pm0.3}$ & $78.3{\scriptstyle\,\pm0.3}$ & $74.6{\scriptstyle\,\pm0.3}$ & $72.3{\scriptstyle\,\pm0.4}$ & $79.4{\scriptstyle\,\pm0.3}$ & $43.2{\scriptstyle\,\pm0.6}$ \\
+\multicolumn{7}{l}{\textit{Staircase length}} \\
+\texttt{staircase\_f025} & $92.0{\scriptstyle\,\pm0.1}$ & $71.0{\scriptstyle\,\pm0.9}$ & $74.8{\scriptstyle\,\pm0.4}$ & $58.9{\scriptstyle\,\pm1.1}$ & $71.9{\scriptstyle\,\pm0.1}$ & $41.0{\scriptstyle\,\pm0.8}$ \\
+\texttt{staircase} & $90.7{\scriptstyle\,\pm0.2}$ & $75.8{\scriptstyle\,\pm0.7}$ & $78.7{\scriptstyle\,\pm0.0}$ & $68.3{\scriptstyle\,\pm0.4}$ & $68.8{\scriptstyle\,\pm0.4}$ & $55.0{\scriptstyle\,\pm0.5}$ \\
+\texttt{staircase\_f075} & $88.5{\scriptstyle\,\pm0.1}$ & $78.9{\scriptstyle\,\pm0.1}$ & $80.3{\scriptstyle\,\pm0.2}$ & $75.0{\scriptstyle\,\pm0.2}$ & $64.5{\scriptstyle\,\pm0.8}$ & $56.1{\scriptstyle\,\pm0.7}$ \\
+\hline
+\end{tabular}
