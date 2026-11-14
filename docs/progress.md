@@ -50,7 +50,10 @@ Ağa blur ve contrast seviyesini kendisi seçtirsek, bebek gibi önce bulanık v
 - 2026-11-08: F6 bitti (F5 ile aynı sıralama; random en iyi: 92.2/85.3/84.4). Kullanıcı genişletilmiş planı onayladı; kod commit 27d22f1 (52 test). Genişletilmiş koşu başladı: `colab/run_conds.sh short 12 '0 1 2' <13 koşul>` + tüm eski checkpoint'lerde probe; log Drive `logs/ext_runner.log`, ~1 s 15 dk. Colab MCP bağlanmadı; Colab doğrudan Chrome eklentisiyle sürülüyor (yeni notebook Untitled17).
 - 2026-11-08: Genişletilmiş deneyler bitti (13 koşul × 3 seed + 81 checkpoint'te probe). Rapor v3: https://claude.ai/artifact/4uPcbPyQs3RmhzjeWz8FAi . Ana sonuç: hiçbir teacher bulanık→keskin seçmiyor; hard-first PG ölçeğinden (rpg ile kayboluyor). Robustness ve shape bias sırayla değil blur maruziyetiyle geliyor; random ≈ en iyi. Per-image karışım contrast'ı gerçek yapıyor (88.9). Ayrıntı: `docs/experiments.md` #7–17. Özet: `src/digest.py`.
 - 2026-11-08: Hocaya gidecek proje raporu (Claude Docs, PDF/Word olarak dışa aktarılabilir). Türkçe: https://claude.ai/artifact/Ch4cPgtfwvQtfdbdmPXmhd · İngilizce: https://claude.ai/artifact/6CfcknHR1GtuszoP8q31xi . İçerik: soru/hipotez, arka plan, yöntem, süreç (pilot, BN hatası), sonuçlar (3 grafik), tartışma, sınırlamalar, hocaya sorular, tüm sayılar.
-- Sonraki iş: kullanıcı raporu okuyup hocaya gönderir; hocanın cevabına göre 100 ep varyantlar veya yeni ödül (transfer progress).
+- 2026-11-11: Arkadaş için ayrıntılı Türkçe rapor: `docs/reports/auto-curriculum-rapor.{html,pdf}` (16 s.).
+- 2026-11-14: Ders şablonunda (report-v2, Moodle'da sadece .tex+.pdf vardı; stil dosyaları yok → kendi taklit `docs/report/styles/`) İngilizce rapor: `docs/report/main.pdf` (41 s.) ve kullanıcının seçtiği kısa sürüm `docs/report/main-compact.pdf` (28 s., bilgi kaybı yok, sayılar kontrol edildi).
+- Açık: Team Work cümlesi (2.2.4) ve harcanan GPU tahmini doğrulanmalı; hocaya giden Claude Docs raporlarında iki fazla kesin cümle düzeltilmedi ("shuffled aynı sonuç", "sıranın faydası yok").
+- Sonraki iş: raporu teslim et; hocanın cevabına göre 100 ep yeni varyantlar veya yeni ödül (transfer progress).
 
 ## Sonraki adım
 - Kullanıcı makaleleri okuyup taslak notları düzeltir, arkadaşına gönderir.
