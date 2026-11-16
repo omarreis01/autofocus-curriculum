@@ -53,7 +53,8 @@ Ağa blur ve contrast seviyesini kendisi seçtirsek, bebek gibi önce bulanık v
 - 2026-11-11: Arkadaş için ayrıntılı Türkçe rapor: `docs/reports/auto-curriculum-rapor.{html,pdf}` (16 s.).
 - 2026-11-14: Ders şablonunda (report-v2, Moodle'da sadece .tex+.pdf vardı; stil dosyaları yok → kendi taklit `docs/report/styles/`) İngilizce rapor: `docs/report/main.pdf` (41 s.) ve kullanıcının seçtiği kısa sürüm `docs/report/main-compact.pdf` (28 s., bilgi kaybı yok, sayılar kontrol edildi).
 - Açık: Team Work cümlesi (2.2.4) ve harcanan GPU tahmini doğrulanmalı; hocaya giden Claude Docs raporlarında iki fazla kesin cümle düzeltilmedi ("shuffled aynı sonuç", "sıranın faydası yok").
-- Sonraki iş: raporu teslim et; hocanın cevabına göre 100 ep yeni varyantlar veya yeni ödül (transfer progress).
+- 2026-11-17: Midterm raporu (`CMPE492_AutoCurriculum_Celik_Soylemez.pdf` = `docs/report/main-compact.pdf`) hocaya e-postayla gitti. Moodle son tarihi 17 Kasım 23:59.
+- Sonraki iş: hocanın cevabına göre 100 ep yeni varyantlar veya yeni ödül (transfer progress).
 
 ## Sonraki adım
 - Kullanıcı makaleleri okuyup taslak notları düzeltir, arkadaşına gönderir.
